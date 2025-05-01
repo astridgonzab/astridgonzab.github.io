@@ -12,7 +12,7 @@ output:
 navbar:
   title: "📊 Análisis de caso 3"
   left:
-    - text: "Descripción del modelo de regresión"
+    - text: "Ejercicio de regresión lineal múltiple"
       icon: fa-chart-bar
       href: index.html
   right:

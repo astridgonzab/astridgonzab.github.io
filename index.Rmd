@@ -17,12 +17,6 @@ library(knitr)
 library(kableExtra)
 library(DT)
 ```
-```{css,echo=FALSE}
-.column {display:flex;}
-h1{color:rgb(26, 72, 112)}
-h2{color:rgb(26, 72, 112)}
-h3{color:rgb(26, 72, 112)}
-```
 
 # **1. Datos**
 
