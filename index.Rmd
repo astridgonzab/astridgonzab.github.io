@@ -1,0 +1,314 @@
+---
+title: "Regresión Lineal Múltiple"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    code_download: true
+    theme: lumen 
+    toc_depth: 3 
+    css: styles.css             
+---
+```{r, echo=FALSE,warning=FALSE}
+library(readxl)
+library(knitr)     
+library(kableExtra)
+library(DT)
+```
+```{css,echo=FALSE}
+.column {display:flex;}
+h1{color:rgb(26, 72, 112)}
+h2{color:rgb(26, 72, 112)}
+h3{color:rgb(26, 72, 112)}
+```
+
+# **1. Datos**
+
+```{r, warning=FALSE}
+caso3 <- read_excel("C:/Users/User/Downloads/Caso3.xlsx")
+colnames(caso3) <- c("ID_Pedido", "Distancia_km", "Num_Paquetes", "Velocidad_Trafico", "Tiempo_Entrega_min")
+datatable(caso3, 
+          options = list(pageLength = 5, 
+                         autoWidth = TRUE),
+          caption = "Tabla 1. Datos de Pedidos",
+          rownames = FALSE, 
+          class = 'display', 
+          escape = FALSE) %>%
+  formatStyle(
+    columns = names(caso3),
+    border = 'solid 1px black', 
+    textAlign = 'center'  
+  ) %>%
+  formatStyle(
+    colnames(caso3),
+    border = 'solid 1px black', 
+    textAlign = 'center' 
+  )
+```
+
+El conjunto de datos consta de 4 variables relevantes: Distancia_km, Num_Paquetes, Velocidad_Trafico y Tiempo_Entrega_min, con un total de 20 observaciones, siendo el ID_Pedido solo un identificador sin relevancia en el análisis. La situación aborda la operación logística de entrega de pedidos a domicilio, considerando diversos factores que podrían influir en el tiempo total de entrega.
+
+## **1.2 . Contexto y objetivo**
+
+En este estudio se busca predecir el tiempo de entrega de pedidos a domicilio a partir de características asociadas a la operación logística. La empresa dispone de información sobre diversos factores que pueden afectar el tiempo total de entrega, como la distancia recorrida, el número de paquetes transportados y las condiciones del tráfico. Para modelar esta situación, se plantea un análisis de regresión lineal múltiple, utilizando como:
+
+**Variable dependiente:**
+
+- **Tiempo_Entrega_min:** Tiempo que tarda en completarse cada entrega (en minutos).
+
+**Variables independientes:**
+
+- **Distancia_km:** Distancia recorrida desde el punto de despacho hasta el destino (en kilómetros).
+
+- **Num_Paquetes:** Número de paquetes incluidos en el pedido.
+
+- **Velocidad_Trafico:** Velocidad promedio del tráfico en la ruta de entrega (en kilómetros por hora).
+
+Este análisis permitirá comprender cómo influyen estos factores en los tiempos de entrega y construir un modelo que facilite la predicción precisa de futuros pedidos, mejorando la eficiencia logística y la satisfacción del cliente.
+
+# **2.  Ecuación de regresión ajustada e interpretación de los parámetros**
+
+```{r}
+# Ajustar el modelo de regresión lineal múltiple
+modelo <- lm(Tiempo_Entrega_min ~ Distancia_km + Num_Paquetes + Velocidad_Trafico, data = caso3)
+
+# Ver el resumen del modelo
+summary(modelo)
+```
+A partir de la salida del modelo de regresión lineal ajustado en R, obtenemos la siguiente ecuación de la recta ajustada:
+
+$$
+\text{Tiempo_Entrega_min} = 40.5191 + 0.3645 \times \text{Distancia_km} + 1.7958 \times \text{Num_Paquetes} - 0.1361 \times \text{Velocidad_Trafico}
+$$
+
+En donde: 
+
+- **Parámetro \( b_0 = 40.5191 \) (Intercepto)**: El intercepto de 40.5191 representa el **tiempo de entrega base** cuando todas las variables independientes (distancia, número de paquetes y velocidad del tráfico) son cero. Es decir, si la distancia fuera cero, no hubiera paquetes y la velocidad del tráfico fuera cero, el tiempo de entrega sería de **40.5191 minutos**.
+
+- **Parámetro \( b_1 = 0.3645 \) (Distancia_km)**: Este parámetro indica que **por cada kilómetro adicional** en la distancia de entrega, el tiempo de entrega aumentará en promedio **0.3645 minutos**. 
+
+- **Parámetro \( b_2 = 1.7958 \) (Num_Paquetes)**: Este parámetro muestra que **por cada paquete adicional** en el pedido, el tiempo de entrega aumentará en promedio **1.7958 minutos**. 
+
+- **Parámetro \( b_3 = -0.1361 \) (Velocidad_Trafico)**: Este parámetro indica que **por cada aumento de 1 km/h en la velocidad del tráfico**, el tiempo de entrega disminuirá en promedio **0.1361 minutos**.
+
+# **3. Pronósticar el tiempo de entrega de un pedido que debe recorrer 18 kilómetros, lleva 10 paquetes y el tráfico es de 40Km/h.**
+
+```{r}
+# Definir los parámetros de la regresión
+b0 <- 40.5191
+b1 <- 0.3645
+b2 <- 1.7958
+b3 <- -0.1361
+
+# Vector con los valores de las variables
+Distancia_km <- 18
+Num_Paquetes <- 10
+Velocidad_Trafico <- 40
+
+# Cálculo del tiempo de entrega 
+tiempo_entrega <- b0 + b1 * Distancia_km + b2 * Num_Paquetes + b3 * Velocidad_Trafico
+
+cat("El tiempo de entrega pronosticado es: ", round(tiempo_entrega, 2), " minutos\n")
+```
+
+# **4.  Anova**
+
+El ANOVA en regresión lineal se utiliza para analizar cómo las variables independientes, como Distancia_km, Num_Paquetes y Velocidad_Trafico, contribuyen a la variabilidad del Tiempo_Entrega_min. Este análisis descompone la variabilidad total en dos partes: una explicada por el modelo, a través de las variables predictoras, y otra atribuida al error, que representa la variabilidad no explicada por el modelo.
+
+```{r}
+anova <- anova(modelo)
+anova
+```
+
+El ANOVA se realizó para analizar cómo las tres variables independientes (Distancia_km, Num_Paquetes, y Velocidad_Trafico) afectan el Tiempo_Entrega_min. Al combinar la información de las variables independientes, se obtuvo una única Suma de Cuadrados de la Regresión (SCR), Media Cuadrática de la Regresión (MCR) y sus correspondientes grados de libertad. Estos valores se sumaron para formar la base del análisis y calcular el valor F, que nos permite evaluar la significancia global del modelo. A continuación, se presenta la tabla con los resultados del ANOVA, mostrando cómo las variables y el error contribuyen a la variabilidad total del tiempo de entrega.
+
+```{r}
+# Suma de Cuadrados Total (SCT)
+sct <- sum((caso3$Tiempo_Entrega_min - mean(caso3$Tiempo_Entrega_min))^2)  # Suma de Cuadrados Total
+
+# Suma de Cuadrados de la Regresión (SCR)
+scr <- sum((fitted(modelo) - mean(caso3$Tiempo_Entrega_min))^2)  # Suma de Cuadrados de la Regresión
+
+# Suma de Cuadrados del Error (SCE)
+sce <- sct - scr  # Suma de Cuadrados del Error
+
+# Grados de libertad
+df_reg <- length(coef(modelo)) - 1  # Número de variables predictoras (sin contar el intercepto)
+df_error <- length(caso3$Tiempo_Entrega_min) - df_reg - 1
+df_total <- length(caso3$Tiempo_Entrega_min) - 1
+
+# Media cuadrática de la regresión (MCR) y media cuadrática del error (MCE)
+mcr <- scr / df_reg
+mce <- sce / df_error
+
+# Cálculo del valor F
+f_value <- mcr / mce
+
+# P-valor asociado al valor F
+p_value <- 1 - pf(f_value, df_reg, df_error)
+p_value_formatted <- format(p_value, scientific = TRUE, digits = 4)
+
+resultados_anova <- data.frame(
+  Fuente = c("Regresión (Modelo)", "Error (Residuos)", "Total"),
+  Suma_Cuadrados = c(scr, sce, sct),
+  Grados_de_Libertad = c(df_reg, df_error, df_total),
+  Media_Cuadrática = c(mcr, mce, NA),
+  Valor_F = c(f_value, NA, NA),
+  P_Valor = c(p_value_formatted, NA, NA)
+)
+
+resultados_anova %>%
+  kable("html", caption = "Resultados del ANOVA para el Modelo de Regresión", align = "c", digits = 3) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "responsive"), full_width = FALSE, position = "center") %>%
+  column_spec(1, bold = TRUE) %>%
+  row_spec(0, bold = TRUE, background = "#DBDBDB") %>%
+  row_spec(1:2, background = "white") %>%
+  kable_styling(bootstrap_options = "condensed", full_width = FALSE)
+```
+
+# **5.  Prueba Global**
+
+La prueba global se realiza para evaluar si las variables independientes (Distancia_km, Num_Paquetes y Velocidad_Trafico) tienen un impacto significativo sobre el Tiempo_Entrega_min. A través de esta prueba comparamos la variabilidad explicada por el modelo con la variabilidad no explicada (error) y, usando el estadístico F y el p-valor, determinamos si el modelo en su conjunto es relevante para predecir el tiempo de entrega.
+
+## **1. Formulación de hipótesis**
+
+- **Hipótesis nula (\(H_0\))**:  
+  \[
+  H_0: \beta_1 = \beta_2 = \beta_3 = 0
+  \]  
+  Esto significa que **ninguna** de las variables independientes tiene un efecto significativo sobre el **Tiempo_Entrega_min**.
+
+- **Hipótesis alternativa (\(H_1\))**:  
+  \[
+  H_1: \text{Al menos uno de los coeficientes } \beta_i \neq 0
+  \]  
+  
+Esto significa que **al menos una de las variables** tiene un efecto significativo sobre el **Tiempo_Entrega_min**.
+
+## **2. Nivel de significancia**
+
+El **nivel de significancia** (\(\alpha\)) es el umbral que utilizamos para decidir si podemos rechazar la **hipótesis nula**. En este caso, hemos establecido el nivel de significancia en \( \alpha = 0.05 \), lo que significa que si el **p-valor** calculado es menor que 0.05, rechazamos la hipótesis nula y concluimos que al menos una de las variables independientes tiene un efecto significativo sobre el **Tiempo_Entrega_min**.
+
+## **3. Estadístico de prueba**
+
+Para esto tenemos en cuenta lo siguiente: 
+
+$$
+F = \frac{\frac{\text{Suma de Cuadrados de la Regresión (SCR)}}{\text{df}_{\text{reg}}}}{\frac{\text{Suma de Cuadrados del Error (SCE)}}{\text{df}_{\text{error}}}}
+$$
+por tanto: 
+
+```{r}
+anova_resultado <- anova(modelo)
+
+# Obtener las sumas de cuadrados de la regresión (SCR) y del error (SCE)
+scr <- anova_resultado$`Sum Sq`[1] + anova_resultado$`Sum Sq`[2] + anova_resultado$`Sum Sq`[3] # Suma de Cuadrados de la Regresión
+sce <- anova_resultado$`Sum Sq`[4]  # Suma de Cuadrados del Error
+
+# Obtener los grados de libertad de la regresión (df_reg) y del error (df_error)
+df_reg <- anova_resultado$Df[1] + anova_resultado$Df[2] + anova_resultado$Df[3] # Grados de libertad de la regresión
+df_error <- anova_resultado$Df[4]  # Grados de libertad del error
+
+# Cálculo del valor F
+valor_F <- (scr / df_reg) / (sce / df_error)
+cat("El valor F calculado es:", round(valor_F, 2), "\n")
+```
+
+Es decir: 
+
+$$
+F = \frac{\frac{\text{SCR}}{\text{df}_{\text{reg}}}}{\frac{\text{SCE}}{\text{df}_{\text{error}}}} = \frac{\frac{1332.227}{3}}{\frac{446.973}{16}} = 15.9
+$$
+
+## **4. Criterio de decisión**
+
+```{r}
+# Calcular el valor p asociado al valor F
+p_value <- 1 - pf(valor_F, df_reg, df_error)
+
+cat("El valor p asociado al valor F calculado es:", format(p_value, scientific = TRUE), "\n")
+```
+## **5. Interpretación**
+
+Si el valor p es menor que el nivel de significancia \(\alpha = 0.05\), rechazamos la hipótesis nula (\(H_0\)) y concluimos que **al menos una de las variables independientes** tiene un impacto significativo sobre el **Tiempo_Entrega_min**. En caso contrario, si el valor p es mayor o igual a 0.05, no rechazamos la hipótesis nula. En nuestro caso, el valor p calculado es \(4.67 \times 10^{-5}\), que es menor que \(\alpha = 0.05\). Por lo tanto, **rechazamos la hipótesis nula** y concluimos que el modelo es significativo.
+
+## **6. Conclusión**
+El análisis del modelo de regresión muestra que al menos una de las variables predictoras tiene un impacto significativo sobre el Tiempo_Entrega_min. Dado que el p-valor es menor que el nivel de significancia (α=0.05), rechazamos la hipótesis nula y concluimos que el modelo es estadísticamente significativo para predecir el tiempo de entrega.
+
+# **6.  Pruebas individuales sobre las variables**
+
+A diferencia de la prueba global, que evalúa el impacto conjunto de todas las variables, en esta sección analizamos cada variable independiente por separado. Para cada una, comparamos el valor p con el nivel de significancia (𝛼= 0.05 para determinar si rechazamos la hipótesis nula y concluimos que la variable tiene un impacto significativo sobre el Tiempo_Entrega_min.
+
+```{r}
+# Resumen del modelo
+summary_resultado <- summary(modelo)
+
+# Extraer coeficientes, valores p y grados de libertad
+coeficientes <- summary_resultado$coefficients
+
+# Definir el nivel de significancia
+alpha <- 0.05
+
+hipotesis_table <- data.frame(
+  Variable = c("Distancia_km", "Num_Paquetes", "Velocidad_Trafico"),
+  Hipotesis_nula = c("$H_0: \\beta_1 = 0$", "$H_0: \\beta_2 = 0$", "$H_0: \\beta_3 = 0$"),
+  Hipotesis_alternativa = c("$H_1: \\beta_1 \\neq 0$", "$H_1: \\beta_2 \\neq 0$", "$H_1: \\beta_3 \\neq 0$"),
+  Nivel_significancia = rep("0.05", 3),
+  Valor_t = c(coeficientes[2, 3], coeficientes[3, 3], coeficientes[4, 3]),  # Valores t
+  df = c(summary_resultado$df[2], summary_resultado$df[2], summary_resultado$df[2]),  # Grados de libertad
+  Valor_p = c(coeficientes[2, 4], coeficientes[3, 4], coeficientes[4, 4]),
+  Comparacion = c(
+    ifelse(coeficientes[2, 4] < alpha, "Valor p < alfa", "Valor p > alfa"),
+    ifelse(coeficientes[3, 4] < alpha, "Valor p < alfa", "Valor p > alfa"),
+    ifelse(coeficientes[4, 4] < alpha, "Valor p < alfa", "Valor p > alfa")
+  ),
+  Decisión = c(
+    ifelse(coeficientes[2, 4] < alpha, "Rechazamos $H_0$", "No rechazamos $H_0$"),
+    ifelse(coeficientes[3, 4] < alpha, "Rechazamos $H_0$", "No rechazamos $H_0$"),
+    ifelse(coeficientes[4, 4] < alpha, "Rechazamos $H_0$", "No rechazamos $H_0$")
+  ),
+  stringsAsFactors = FALSE
+)
+
+hipotesis_table %>%
+  kable("html", caption = "Prueba de Hipótesis para las Variables Independientes", align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE, position = "center")
+```
+Como se puede observar, Num_Paquetes es la única variable que tiene un impacto significativo sobre el Tiempo_Entrega_min según los resultados de la prueba de hipótesis. En cambio, Distancia_km y Velocidad_Trafico no muestran una relación significativa con el tiempo de entrega, esto sugiere que, en el contexto de este modelo de regresión, el número de paquetes es el factor más relevante para predecir el Tiempo_Entrega_min.
+
+# **7.  Coeficiente de determinación**
+
+```{r}
+
+sce <- sum(anova_resultado$`Sum Sq`[4]) 
+sct <- sum(anova_resultado$`Sum Sq`)     
+
+# Número de observaciones y predictores
+n <- length(caso3$Tiempo_Entrega_min)
+k <- length(coef(modelo)) - 1  # Número de predictores (sin contar el intercepto)
+
+# Cálculo para R^2 ajustado
+r_squared_ajustado <- 1 - ((sce / (n - k - 1)) / (sct / (n - 1)))
+
+cat("El valor de R^2 ajustado es:", round(r_squared_ajustado, 4), "\n")
+```
+
+El \( R^2_{\text{ajustado}} = 0.7017 \) indica que el **70.17%** de la variabilidad en el **Tiempo_Entrega_min** es explicada por las variables del modelo. Este valor refleja un ajuste razonable del modelo, sugiriendo que las variables seleccionadas tienen un impacto notable en la predicción del tiempo de entrega. Sin embargo, hay un porcentaje significativo de la variabilidad (aproximadamente el **29.83%**) que no está siendo explicado por el modelo, lo que sugiere que hay otros factores no contemplados en el análisis.
+
+# **8.  Coeficiente de correlación de Pearson (cálculo e interpretación)**
+
+```{r}
+# Calcular la matriz de correlación entre las variables
+correlaciones <- cor(caso3[, c("Distancia_km", "Num_Paquetes", "Velocidad_Trafico", "Tiempo_Entrega_min")])
+
+correlaciones %>%
+  kable("html", caption = "Matriz de Correlación entre las Variables", align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center")
+```
+
+# **9.  Prueba de hipótesis para coeficiente de correlación**
+
+
+# **10. Validación de los supuestos**

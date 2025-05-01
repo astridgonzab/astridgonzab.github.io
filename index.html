@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Regresión Lineal Múltiple</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">📊 Análisis de caso 3</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-chart-bar"></span>
+     
+    Descripción del modelo de regresión
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="#">Autores: Carolina Gonzalez Becerra, Nicole García Bernal</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Regresión Lineal Múltiple</h1>
+
+</div>
+
+
+<style type="text/css">
+.column {display:flex;}
+h1{color:rgb(26, 72, 112)}
+h2{color:rgb(26, 72, 112)}
+h3{color:rgb(26, 72, 112)}
+</style>
+<div id="datos" class="section level1">
+<h1><strong>1. Datos</strong></h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>caso3 <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">&quot;C:/Users/User/Downloads/Caso3.xlsx&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">colnames</span>(caso3) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID_Pedido&quot;</span>, <span class="st">&quot;Distancia_km&quot;</span>, <span class="st">&quot;Num_Paquetes&quot;</span>, <span class="st">&quot;Velocidad_Trafico&quot;</span>, <span class="st">&quot;Tiempo_Entrega_min&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">datatable</span>(caso3, </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">5</span>, </span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                         <span class="at">autoWidth =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>          <span class="at">caption =</span> <span class="st">&quot;Tabla 1. Datos de Pedidos&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>          <span class="at">rownames =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&#39;display&#39;</span>, </span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>          <span class="at">escape =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="fu">formatStyle</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">names</span>(caso3),</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="at">border =</span> <span class="st">&#39;solid 1px black&#39;</span>, </span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="at">textAlign =</span> <span class="st">&#39;center&#39;</span>  </span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="fu">formatStyle</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="fu">colnames</span>(caso3),</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    <span class="at">border =</span> <span class="st">&#39;solid 1px black&#39;</span>, </span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    <span class="at">textAlign =</span> <span class="st">&#39;center&#39;</span> </span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a01095e32312b7f16076" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a01095e32312b7f16076">{"x":{"filter":"none","vertical":false,"caption":"<caption>Tabla 1. Datos de Pedidos<\/caption>","data":[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],[11,35,8,19,30,12,5,23,18,9,28,20,20,10,24,16,11,27,13,21],[9,12,8,8,18,6,2,10,7,4,14,6,9,8,11,7,5,13,6,9],[45,50,35,40,55,33,40,48,37,31,52,39,46,34,50,36,32,53,38,47],[45,60,55,50,75,58,38,65,53,51,70,49,60,48,68,55,52,72,50,62]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>ID_Pedido<\/th>\n      <th>Distancia_km<\/th>\n      <th>Num_Paquetes<\/th>\n      <th>Velocidad_Trafico<\/th>\n      <th>Tiempo_Entrega_min<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[0,1,2,3,4]},{"name":"ID_Pedido","targets":0},{"name":"Distancia_km","targets":1},{"name":"Num_Paquetes","targets":2},{"name":"Velocidad_Trafico","targets":3},{"name":"Tiempo_Entrega_min","targets":4}],"order":[],"orderClasses":false,"lengthMenu":[5,10,25,50,100],"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[4]; $(this.api().cell(row, 4).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'border':'solid 1px black','text-align':'center'});\nvar value=data[4]; $(this.api().cell(row, 4).node()).css({'border':'solid 1px black','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+<p>El conjunto de datos consta de 4 variables relevantes: Distancia_km,
+Num_Paquetes, Velocidad_Trafico y Tiempo_Entrega_min, con un total de 20
+observaciones, siendo el ID_Pedido solo un identificador sin relevancia
+en el análisis. La situación aborda la operación logística de entrega de
+pedidos a domicilio, considerando diversos factores que podrían influir
+en el tiempo total de entrega.</p>
+<div id="contexto-y-objetivo" class="section level2">
+<h2><strong>1.2 . Contexto y objetivo</strong></h2>
+<p>En este estudio se busca predecir el tiempo de entrega de pedidos a
+domicilio a partir de características asociadas a la operación
+logística. La empresa dispone de información sobre diversos factores que
+pueden afectar el tiempo total de entrega, como la distancia recorrida,
+el número de paquetes transportados y las condiciones del tráfico. Para
+modelar esta situación, se plantea un análisis de regresión lineal
+múltiple, utilizando como:</p>
+<p><strong>Variable dependiente:</strong></p>
+<ul>
+<li><strong>Tiempo_Entrega_min:</strong> Tiempo que tarda en completarse
+cada entrega (en minutos).</li>
+</ul>
+<p><strong>Variables independientes:</strong></p>
+<ul>
+<li><p><strong>Distancia_km:</strong> Distancia recorrida desde el punto
+de despacho hasta el destino (en kilómetros).</p></li>
+<li><p><strong>Num_Paquetes:</strong> Número de paquetes incluidos en el
+pedido.</p></li>
+<li><p><strong>Velocidad_Trafico:</strong> Velocidad promedio del
+tráfico en la ruta de entrega (en kilómetros por hora).</p></li>
+</ul>
+<p>Este análisis permitirá comprender cómo influyen estos factores en
+los tiempos de entrega y construir un modelo que facilite la predicción
+precisa de futuros pedidos, mejorando la eficiencia logística y la
+satisfacción del cliente.</p>
+</div>
+</div>
+<div
+id="ecuación-de-regresión-ajustada-e-interpretación-de-los-parámetros"
+class="section level1">
+<h1><strong>2. Ecuación de regresión ajustada e interpretación de los
+parámetros</strong></h1>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Ajustar el modelo de regresión lineal múltiple</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>modelo <span class="ot">&lt;-</span> <span class="fu">lm</span>(Tiempo_Entrega_min <span class="sc">~</span> Distancia_km <span class="sc">+</span> Num_Paquetes <span class="sc">+</span> Velocidad_Trafico, <span class="at">data =</span> caso3)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Ver el resumen del modelo</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Tiempo_Entrega_min ~ Distancia_km + Num_Paquetes + 
+##     Velocidad_Trafico, data = caso3)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -9.565 -2.935  1.095  4.106  6.824 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        40.5191     9.0354   4.484 0.000375 ***
+## Distancia_km        0.3645     0.2885   1.263 0.224600    
+## Num_Paquetes        1.7958     0.6703   2.679 0.016459 *  
+## Velocidad_Trafico  -0.1361     0.3236  -0.421 0.679643    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5.285 on 16 degrees of freedom
+## Multiple R-squared:  0.7488, Adjusted R-squared:  0.7017 
+## F-statistic:  15.9 on 3 and 16 DF,  p-value: 4.667e-05</code></pre>
+<p>A partir de la salida del modelo de regresión lineal ajustado en R,
+obtenemos la siguiente ecuación de la recta ajustada:</p>
+<p><span class="math display">\[
+\text{Tiempo_Entrega_min} = 40.5191 + 0.3645 \times \text{Distancia_km}
++ 1.7958 \times \text{Num_Paquetes} - 0.1361 \times
+\text{Velocidad_Trafico}
+\]</span></p>
+<p>En donde:</p>
+<ul>
+<li><p><strong>Parámetro <span class="math inline">\(b_0 =
+40.5191\)</span> (Intercepto)</strong>: El intercepto de 40.5191
+representa el <strong>tiempo de entrega base</strong> cuando todas las
+variables independientes (distancia, número de paquetes y velocidad del
+tráfico) son cero. Es decir, si la distancia fuera cero, no hubiera
+paquetes y la velocidad del tráfico fuera cero, el tiempo de entrega
+sería de <strong>40.5191 minutos</strong>.</p></li>
+<li><p><strong>Parámetro <span class="math inline">\(b_1 =
+0.3645\)</span> (Distancia_km)</strong>: Este parámetro indica que
+<strong>por cada kilómetro adicional</strong> en la distancia de
+entrega, el tiempo de entrega aumentará en promedio <strong>0.3645
+minutos</strong>.</p></li>
+<li><p><strong>Parámetro <span class="math inline">\(b_2 =
+1.7958\)</span> (Num_Paquetes)</strong>: Este parámetro muestra que
+<strong>por cada paquete adicional</strong> en el pedido, el tiempo de
+entrega aumentará en promedio <strong>1.7958 minutos</strong>.</p></li>
+<li><p><strong>Parámetro <span class="math inline">\(b_3 =
+-0.1361\)</span> (Velocidad_Trafico)</strong>: Este parámetro indica que
+<strong>por cada aumento de 1 km/h en la velocidad del tráfico</strong>,
+el tiempo de entrega disminuirá en promedio <strong>0.1361
+minutos</strong>.</p></li>
+</ul>
+</div>
+<div
+id="pronósticar-el-tiempo-de-entrega-de-un-pedido-que-debe-recorrer-18-kilómetros-lleva-10-paquetes-y-el-tráfico-es-de-40kmh."
+class="section level1">
+<h1><strong>3. Pronósticar el tiempo de entrega de un pedido que debe
+recorrer 18 kilómetros, lleva 10 paquetes y el tráfico es de
+40Km/h.</strong></h1>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Definir los parámetros de la regresión</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>b0 <span class="ot">&lt;-</span> <span class="fl">40.5191</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fl">0.3645</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fl">1.7958</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>b3 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.1361</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># Vector con los valores de las variables</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>Distancia_km <span class="ot">&lt;-</span> <span class="dv">18</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>Num_Paquetes <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>Velocidad_Trafico <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># Cálculo del tiempo de entrega </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>tiempo_entrega <span class="ot">&lt;-</span> b0 <span class="sc">+</span> b1 <span class="sc">*</span> Distancia_km <span class="sc">+</span> b2 <span class="sc">*</span> Num_Paquetes <span class="sc">+</span> b3 <span class="sc">*</span> Velocidad_Trafico</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;El tiempo de entrega pronosticado es: &quot;</span>, <span class="fu">round</span>(tiempo_entrega, <span class="dv">2</span>), <span class="st">&quot; minutos</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## El tiempo de entrega pronosticado es:  59.59  minutos</code></pre>
+</div>
+<div id="anova" class="section level1">
+<h1><strong>4. Anova</strong></h1>
+<p>El ANOVA en regresión lineal se utiliza para analizar cómo las
+variables independientes, como Distancia_km, Num_Paquetes y
+Velocidad_Trafico, contribuyen a la variabilidad del Tiempo_Entrega_min.
+Este análisis descompone la variabilidad total en dos partes: una
+explicada por el modelo, a través de las variables predictoras, y otra
+atribuida al error, que representa la variabilidad no explicada por el
+modelo.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>anova <span class="ot">&lt;-</span> <span class="fu">anova</span>(modelo)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>anova</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: Tiempo_Entrega_min
+##                   Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Distancia_km       1 1098.24 1098.24 39.3128 1.117e-05 ***
+## Num_Paquetes       1  229.05  229.05  8.1991   0.01126 *  
+## Velocidad_Trafico  1    4.94    4.94  0.1769   0.67964    
+## Residuals         16  446.97   27.94                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>El ANOVA se realizó para analizar cómo las tres variables
+independientes (Distancia_km, Num_Paquetes, y Velocidad_Trafico) afectan
+el Tiempo_Entrega_min. Al combinar la información de las variables
+independientes, se obtuvo una única Suma de Cuadrados de la Regresión
+(SCR), Media Cuadrática de la Regresión (MCR) y sus correspondientes
+grados de libertad. Estos valores se sumaron para formar la base del
+análisis y calcular el valor F, que nos permite evaluar la significancia
+global del modelo. A continuación, se presenta la tabla con los
+resultados del ANOVA, mostrando cómo las variables y el error
+contribuyen a la variabilidad total del tiempo de entrega.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Suma de Cuadrados Total (SCT)</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>sct <span class="ot">&lt;-</span> <span class="fu">sum</span>((caso3<span class="sc">$</span>Tiempo_Entrega_min <span class="sc">-</span> <span class="fu">mean</span>(caso3<span class="sc">$</span>Tiempo_Entrega_min))<span class="sc">^</span><span class="dv">2</span>)  <span class="co"># Suma de Cuadrados Total</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Suma de Cuadrados de la Regresión (SCR)</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>scr <span class="ot">&lt;-</span> <span class="fu">sum</span>((<span class="fu">fitted</span>(modelo) <span class="sc">-</span> <span class="fu">mean</span>(caso3<span class="sc">$</span>Tiempo_Entrega_min))<span class="sc">^</span><span class="dv">2</span>)  <span class="co"># Suma de Cuadrados de la Regresión</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co"># Suma de Cuadrados del Error (SCE)</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>sce <span class="ot">&lt;-</span> sct <span class="sc">-</span> scr  <span class="co"># Suma de Cuadrados del Error</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co"># Grados de libertad</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>df_reg <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(modelo)) <span class="sc">-</span> <span class="dv">1</span>  <span class="co"># Número de variables predictoras (sin contar el intercepto)</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>df_error <span class="ot">&lt;-</span> <span class="fu">length</span>(caso3<span class="sc">$</span>Tiempo_Entrega_min) <span class="sc">-</span> df_reg <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>df_total <span class="ot">&lt;-</span> <span class="fu">length</span>(caso3<span class="sc">$</span>Tiempo_Entrega_min) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co"># Media cuadrática de la regresión (MCR) y media cuadrática del error (MCE)</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>mcr <span class="ot">&lt;-</span> scr <span class="sc">/</span> df_reg</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>mce <span class="ot">&lt;-</span> sce <span class="sc">/</span> df_error</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co"># Cálculo del valor F</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>f_value <span class="ot">&lt;-</span> mcr <span class="sc">/</span> mce</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co"># P-valor asociado al valor F</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pf</span>(f_value, df_reg, df_error)</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>p_value_formatted <span class="ot">&lt;-</span> <span class="fu">format</span>(p_value, <span class="at">scientific =</span> <span class="cn">TRUE</span>, <span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>resultados_anova <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>  <span class="at">Fuente =</span> <span class="fu">c</span>(<span class="st">&quot;Regresión (Modelo)&quot;</span>, <span class="st">&quot;Error (Residuos)&quot;</span>, <span class="st">&quot;Total&quot;</span>),</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>  <span class="at">Suma_Cuadrados =</span> <span class="fu">c</span>(scr, sce, sct),</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>  <span class="at">Grados_de_Libertad =</span> <span class="fu">c</span>(df_reg, df_error, df_total),</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>  Media_Cuadrática <span class="ot">=</span> <span class="fu">c</span>(mcr, mce, <span class="cn">NA</span>),</span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>  <span class="at">Valor_F =</span> <span class="fu">c</span>(f_value, <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>  <span class="at">P_Valor =</span> <span class="fu">c</span>(p_value_formatted, <span class="cn">NA</span>, <span class="cn">NA</span>)</span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a>)</span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>resultados_anova <span class="sc">%&gt;%</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="st">&quot;html&quot;</span>, <span class="at">caption =</span> <span class="st">&quot;Resultados del ANOVA para el Modelo de Regresión&quot;</span>, <span class="at">align =</span> <span class="st">&quot;c&quot;</span>, <span class="at">digits =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;responsive&quot;</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">&quot;center&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">&quot;#DBDBDB&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">background =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">&quot;condensed&quot;</span>, <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<table class="table table-striped table-hover table-responsive table table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Resultados del ANOVA para el Modelo de Regresión
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;background-color: rgba(219, 219, 219, 255) !important;">
+Fuente
+</th>
+<th style="text-align:center;font-weight: bold;background-color: rgba(219, 219, 219, 255) !important;">
+Suma_Cuadrados
+</th>
+<th style="text-align:center;font-weight: bold;background-color: rgba(219, 219, 219, 255) !important;">
+Grados_de_Libertad
+</th>
+<th style="text-align:center;font-weight: bold;background-color: rgba(219, 219, 219, 255) !important;">
+Media_Cuadrática
+</th>
+<th style="text-align:center;font-weight: bold;background-color: rgba(219, 219, 219, 255) !important;">
+Valor_F
+</th>
+<th style="text-align:center;font-weight: bold;background-color: rgba(219, 219, 219, 255) !important;">
+P_Valor
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;background-color: white !important;">
+Regresión (Modelo)
+</td>
+<td style="text-align:center;background-color: white !important;">
+1332.227
+</td>
+<td style="text-align:center;background-color: white !important;">
+3
+</td>
+<td style="text-align:center;background-color: white !important;">
+444.076
+</td>
+<td style="text-align:center;background-color: white !important;">
+15.896
+</td>
+<td style="text-align:center;background-color: white !important;">
+4.667e-05
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;background-color: white !important;">
+Error (Residuos)
+</td>
+<td style="text-align:center;background-color: white !important;">
+446.973
+</td>
+<td style="text-align:center;background-color: white !important;">
+16
+</td>
+<td style="text-align:center;background-color: white !important;">
+27.936
+</td>
+<td style="text-align:center;background-color: white !important;">
+NA
+</td>
+<td style="text-align:center;background-color: white !important;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Total
+</td>
+<td style="text-align:center;">
+1779.200
+</td>
+<td style="text-align:center;">
+19
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="prueba-global" class="section level1">
+<h1><strong>5. Prueba Global</strong></h1>
+<p>La prueba global se realiza para evaluar si las variables
+independientes (Distancia_km, Num_Paquetes y Velocidad_Trafico) tienen
+un impacto significativo sobre el Tiempo_Entrega_min. A través de esta
+prueba comparamos la variabilidad explicada por el modelo con la
+variabilidad no explicada (error) y, usando el estadístico F y el
+p-valor, determinamos si el modelo en su conjunto es relevante para
+predecir el tiempo de entrega.</p>
+<div id="formulación-de-hipótesis" class="section level2">
+<h2><strong>1. Formulación de hipótesis</strong></h2>
+<ul>
+<li><p><strong>Hipótesis nula (<span
+class="math inline">\(H_0\)</span>)</strong>:<br />
+<span class="math display">\[
+H_0: \beta_1 = \beta_2 = \beta_3 = 0
+\]</span><br />
+Esto significa que <strong>ninguna</strong> de las variables
+independientes tiene un efecto significativo sobre el
+<strong>Tiempo_Entrega_min</strong>.</p></li>
+<li><p><strong>Hipótesis alternativa (<span
+class="math inline">\(H_1\)</span>)</strong>:<br />
+<span class="math display">\[
+H_1: \text{Al menos uno de los coeficientes } \beta_i \neq 0
+\]</span></p></li>
+</ul>
+<p>Esto significa que <strong>al menos una de las variables</strong>
+tiene un efecto significativo sobre el
+<strong>Tiempo_Entrega_min</strong>.</p>
+</div>
+<div id="nivel-de-significancia" class="section level2">
+<h2><strong>2. Nivel de significancia</strong></h2>
+<p>El <strong>nivel de significancia</strong> (<span
+class="math inline">\(\alpha\)</span>) es el umbral que utilizamos para
+decidir si podemos rechazar la <strong>hipótesis nula</strong>. En este
+caso, hemos establecido el nivel de significancia en <span
+class="math inline">\(\alpha = 0.05\)</span>, lo que significa que si el
+<strong>p-valor</strong> calculado es menor que 0.05, rechazamos la
+hipótesis nula y concluimos que al menos una de las variables
+independientes tiene un efecto significativo sobre el
+<strong>Tiempo_Entrega_min</strong>.</p>
+</div>
+<div id="estadístico-de-prueba" class="section level2">
+<h2><strong>3. Estadístico de prueba</strong></h2>
+<p>Para esto tenemos en cuenta lo siguiente:</p>
+<p><span class="math display">\[
+F = \frac{\frac{\text{Suma de Cuadrados de la Regresión
+(SCR)}}{\text{df}_{\text{reg}}}}{\frac{\text{Suma de Cuadrados del Error
+(SCE)}}{\text{df}_{\text{error}}}}
+\]</span> por tanto:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>anova_resultado <span class="ot">&lt;-</span> <span class="fu">anova</span>(modelo)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co"># Obtener las sumas de cuadrados de la regresión (SCR) y del error (SCE)</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>scr <span class="ot">&lt;-</span> anova_resultado<span class="sc">$</span><span class="st">`</span><span class="at">Sum Sq</span><span class="st">`</span>[<span class="dv">1</span>] <span class="sc">+</span> anova_resultado<span class="sc">$</span><span class="st">`</span><span class="at">Sum Sq</span><span class="st">`</span>[<span class="dv">2</span>] <span class="sc">+</span> anova_resultado<span class="sc">$</span><span class="st">`</span><span class="at">Sum Sq</span><span class="st">`</span>[<span class="dv">3</span>] <span class="co"># Suma de Cuadrados de la Regresión</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>sce <span class="ot">&lt;-</span> anova_resultado<span class="sc">$</span><span class="st">`</span><span class="at">Sum Sq</span><span class="st">`</span>[<span class="dv">4</span>]  <span class="co"># Suma de Cuadrados del Error</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co"># Obtener los grados de libertad de la regresión (df_reg) y del error (df_error)</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>df_reg <span class="ot">&lt;-</span> anova_resultado<span class="sc">$</span>Df[<span class="dv">1</span>] <span class="sc">+</span> anova_resultado<span class="sc">$</span>Df[<span class="dv">2</span>] <span class="sc">+</span> anova_resultado<span class="sc">$</span>Df[<span class="dv">3</span>] <span class="co"># Grados de libertad de la regresión</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>df_error <span class="ot">&lt;-</span> anova_resultado<span class="sc">$</span>Df[<span class="dv">4</span>]  <span class="co"># Grados de libertad del error</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co"># Cálculo del valor F</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>valor_F <span class="ot">&lt;-</span> (scr <span class="sc">/</span> df_reg) <span class="sc">/</span> (sce <span class="sc">/</span> df_error)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;El valor F calculado es:&quot;</span>, <span class="fu">round</span>(valor_F, <span class="dv">2</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## El valor F calculado es: 15.9</code></pre>
+<p>Es decir:</p>
+<p><span class="math display">\[
+F =
+\frac{\frac{\text{SCR}}{\text{df}_{\text{reg}}}}{\frac{\text{SCE}}{\text{df}_{\text{error}}}}
+= \frac{\frac{1332.227}{3}}{\frac{446.973}{16}} = 15.9
+\]</span></p>
+</div>
+<div id="criterio-de-decisión" class="section level2">
+<h2><strong>4. Criterio de decisión</strong></h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Calcular el valor p asociado al valor F</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pf</span>(valor_F, df_reg, df_error)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;El valor p asociado al valor F calculado es:&quot;</span>, <span class="fu">format</span>(p_value, <span class="at">scientific =</span> <span class="cn">TRUE</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## El valor p asociado al valor F calculado es: 4.667362e-05</code></pre>
+</div>
+<div id="interpretación" class="section level2">
+<h2><strong>5. Interpretación</strong></h2>
+<p>Si el valor p es menor que el nivel de significancia <span
+class="math inline">\(\alpha = 0.05\)</span>, rechazamos la hipótesis
+nula (<span class="math inline">\(H_0\)</span>) y concluimos que
+<strong>al menos una de las variables independientes</strong> tiene un
+impacto significativo sobre el <strong>Tiempo_Entrega_min</strong>. En
+caso contrario, si el valor p es mayor o igual a 0.05, no rechazamos la
+hipótesis nula. En nuestro caso, el valor p calculado es <span
+class="math inline">\(4.67 \times 10^{-5}\)</span>, que es menor que
+<span class="math inline">\(\alpha = 0.05\)</span>. Por lo tanto,
+<strong>rechazamos la hipótesis nula</strong> y concluimos que el modelo
+es significativo.</p>
+</div>
+<div id="conclusión" class="section level2">
+<h2><strong>6. Conclusión</strong></h2>
+<p>El análisis del modelo de regresión muestra que al menos una de las
+variables predictoras tiene un impacto significativo sobre el
+Tiempo_Entrega_min. Dado que el p-valor es menor que el nivel de
+significancia (α=0.05), rechazamos la hipótesis nula y concluimos que el
+modelo es estadísticamente significativo para predecir el tiempo de
+entrega.</p>
+</div>
+</div>
+<div id="pruebas-individuales-sobre-las-variables"
+class="section level1">
+<h1><strong>6. Pruebas individuales sobre las variables</strong></h1>
+<p>A diferencia de la prueba global, que evalúa el impacto conjunto de
+todas las variables, en esta sección analizamos cada variable
+independiente por separado. Para cada una, comparamos el valor p con el
+nivel de significancia (𝛼= 0.05 para determinar si rechazamos la
+hipótesis nula y concluimos que la variable tiene un impacto
+significativo sobre el Tiempo_Entrega_min.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Resumen del modelo</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>summary_resultado <span class="ot">&lt;-</span> <span class="fu">summary</span>(modelo)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Extraer coeficientes, valores p y grados de libertad</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>coeficientes <span class="ot">&lt;-</span> summary_resultado<span class="sc">$</span>coefficients</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co"># Definir el nivel de significancia</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>hipotesis_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  <span class="at">Variable =</span> <span class="fu">c</span>(<span class="st">&quot;Distancia_km&quot;</span>, <span class="st">&quot;Num_Paquetes&quot;</span>, <span class="st">&quot;Velocidad_Trafico&quot;</span>),</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>  <span class="at">Hipotesis_nula =</span> <span class="fu">c</span>(<span class="st">&quot;$H_0: </span><span class="sc">\\</span><span class="st">beta_1 = 0$&quot;</span>, <span class="st">&quot;$H_0: </span><span class="sc">\\</span><span class="st">beta_2 = 0$&quot;</span>, <span class="st">&quot;$H_0: </span><span class="sc">\\</span><span class="st">beta_3 = 0$&quot;</span>),</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>  <span class="at">Hipotesis_alternativa =</span> <span class="fu">c</span>(<span class="st">&quot;$H_1: </span><span class="sc">\\</span><span class="st">beta_1 </span><span class="sc">\\</span><span class="st">neq 0$&quot;</span>, <span class="st">&quot;$H_1: </span><span class="sc">\\</span><span class="st">beta_2 </span><span class="sc">\\</span><span class="st">neq 0$&quot;</span>, <span class="st">&quot;$H_1: </span><span class="sc">\\</span><span class="st">beta_3 </span><span class="sc">\\</span><span class="st">neq 0$&quot;</span>),</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>  <span class="at">Nivel_significancia =</span> <span class="fu">rep</span>(<span class="st">&quot;0.05&quot;</span>, <span class="dv">3</span>),</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>  <span class="at">Valor_t =</span> <span class="fu">c</span>(coeficientes[<span class="dv">2</span>, <span class="dv">3</span>], coeficientes[<span class="dv">3</span>, <span class="dv">3</span>], coeficientes[<span class="dv">4</span>, <span class="dv">3</span>]),  <span class="co"># Valores t</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>  <span class="at">df =</span> <span class="fu">c</span>(summary_resultado<span class="sc">$</span>df[<span class="dv">2</span>], summary_resultado<span class="sc">$</span>df[<span class="dv">2</span>], summary_resultado<span class="sc">$</span>df[<span class="dv">2</span>]),  <span class="co"># Grados de libertad</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a>  <span class="at">Valor_p =</span> <span class="fu">c</span>(coeficientes[<span class="dv">2</span>, <span class="dv">4</span>], coeficientes[<span class="dv">3</span>, <span class="dv">4</span>], coeficientes[<span class="dv">4</span>, <span class="dv">4</span>]),</span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a>  <span class="at">Comparacion =</span> <span class="fu">c</span>(</span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a>    <span class="fu">ifelse</span>(coeficientes[<span class="dv">2</span>, <span class="dv">4</span>] <span class="sc">&lt;</span> alpha, <span class="st">&quot;Valor p &lt; alfa&quot;</span>, <span class="st">&quot;Valor p &gt; alfa&quot;</span>),</span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a>    <span class="fu">ifelse</span>(coeficientes[<span class="dv">3</span>, <span class="dv">4</span>] <span class="sc">&lt;</span> alpha, <span class="st">&quot;Valor p &lt; alfa&quot;</span>, <span class="st">&quot;Valor p &gt; alfa&quot;</span>),</span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a>    <span class="fu">ifelse</span>(coeficientes[<span class="dv">4</span>, <span class="dv">4</span>] <span class="sc">&lt;</span> alpha, <span class="st">&quot;Valor p &lt; alfa&quot;</span>, <span class="st">&quot;Valor p &gt; alfa&quot;</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>  ),</span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a>  Decisión <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a>    <span class="fu">ifelse</span>(coeficientes[<span class="dv">2</span>, <span class="dv">4</span>] <span class="sc">&lt;</span> alpha, <span class="st">&quot;Rechazamos $H_0$&quot;</span>, <span class="st">&quot;No rechazamos $H_0$&quot;</span>),</span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a>    <span class="fu">ifelse</span>(coeficientes[<span class="dv">3</span>, <span class="dv">4</span>] <span class="sc">&lt;</span> alpha, <span class="st">&quot;Rechazamos $H_0$&quot;</span>, <span class="st">&quot;No rechazamos $H_0$&quot;</span>),</span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a>    <span class="fu">ifelse</span>(coeficientes[<span class="dv">4</span>, <span class="dv">4</span>] <span class="sc">&lt;</span> alpha, <span class="st">&quot;Rechazamos $H_0$&quot;</span>, <span class="st">&quot;No rechazamos $H_0$&quot;</span>)</span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a>  ),</span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a>)</span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a>hipotesis_table <span class="sc">%&gt;%</span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="st">&quot;html&quot;</span>, <span class="at">caption =</span> <span class="st">&quot;Prueba de Hipótesis para las Variables Independientes&quot;</span>, <span class="at">align =</span> <span class="st">&quot;c&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">&quot;center&quot;</span>)</span></code></pre></div>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Prueba de Hipótesis para las Variables Independientes
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Variable
+</th>
+<th style="text-align:center;">
+Hipotesis_nula
+</th>
+<th style="text-align:center;">
+Hipotesis_alternativa
+</th>
+<th style="text-align:center;">
+Nivel_significancia
+</th>
+<th style="text-align:center;">
+Valor_t
+</th>
+<th style="text-align:center;">
+df
+</th>
+<th style="text-align:center;">
+Valor_p
+</th>
+<th style="text-align:center;">
+Comparacion
+</th>
+<th style="text-align:center;">
+Decisión
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Distancia_km
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(H_0: \beta_1 = 0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(H_1: \beta_1 \neq 0\)</span>
+</td>
+<td style="text-align:center;">
+0.05
+</td>
+<td style="text-align:center;">
+1.2632434
+</td>
+<td style="text-align:center;">
+16
+</td>
+<td style="text-align:center;">
+0.2246001
+</td>
+<td style="text-align:center;">
+Valor p &gt; alfa
+</td>
+<td style="text-align:center;">
+No rechazamos <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Num_Paquetes
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(H_0: \beta_2 = 0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(H_1: \beta_2 \neq 0\)</span>
+</td>
+<td style="text-align:center;">
+0.05
+</td>
+<td style="text-align:center;">
+2.6791679
+</td>
+<td style="text-align:center;">
+16
+</td>
+<td style="text-align:center;">
+0.0164589
+</td>
+<td style="text-align:center;">
+Valor p &lt; alfa
+</td>
+<td style="text-align:center;">
+Rechazamos <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Velocidad_Trafico
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(H_0: \beta_3 = 0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(H_1: \beta_3 \neq 0\)</span>
+</td>
+<td style="text-align:center;">
+0.05
+</td>
+<td style="text-align:center;">
+-0.4205991
+</td>
+<td style="text-align:center;">
+16
+</td>
+<td style="text-align:center;">
+0.6796427
+</td>
+<td style="text-align:center;">
+Valor p &gt; alfa
+</td>
+<td style="text-align:center;">
+No rechazamos <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Como se puede observar, Num_Paquetes es la única variable que tiene
+un impacto significativo sobre el Tiempo_Entrega_min según los
+resultados de la prueba de hipótesis. En cambio, Distancia_km y
+Velocidad_Trafico no muestran una relación significativa con el tiempo
+de entrega, esto sugiere que, en el contexto de este modelo de
+regresión, el número de paquetes es el factor más relevante para
+predecir el Tiempo_Entrega_min.</p>
+</div>
+<div id="coeficiente-de-determinación" class="section level1">
+<h1><strong>7. Coeficiente de determinación</strong></h1>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">sum</span>(anova_resultado<span class="sc">$</span><span class="st">`</span><span class="at">Sum Sq</span><span class="st">`</span>[<span class="dv">4</span>]) </span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>sct <span class="ot">&lt;-</span> <span class="fu">sum</span>(anova_resultado<span class="sc">$</span><span class="st">`</span><span class="at">Sum Sq</span><span class="st">`</span>)     </span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co"># Número de observaciones y predictores</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(caso3<span class="sc">$</span>Tiempo_Entrega_min)</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(modelo)) <span class="sc">-</span> <span class="dv">1</span>  <span class="co"># Número de predictores (sin contar el intercepto)</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co"># Cálculo para R^2 ajustado</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>r_squared_ajustado <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> ((sce <span class="sc">/</span> (n <span class="sc">-</span> k <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">/</span> (sct <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span>)))</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;El valor de R^2 ajustado es:&quot;</span>, <span class="fu">round</span>(r_squared_ajustado, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## El valor de R^2 ajustado es: 0.7017</code></pre>
+<p>El <span class="math inline">\(R^2_{\text{ajustado}} =
+0.7017\)</span> indica que el <strong>70.17%</strong> de la variabilidad
+en el <strong>Tiempo_Entrega_min</strong> es explicada por las variables
+del modelo. Este valor refleja un ajuste razonable del modelo,
+sugiriendo que las variables seleccionadas tienen un impacto notable en
+la predicción del tiempo de entrega. Sin embargo, hay un porcentaje
+significativo de la variabilidad (aproximadamente el
+<strong>29.83%</strong>) que no está siendo explicado por el modelo, lo
+que sugiere que hay otros factores no contemplados en el análisis.</p>
+</div>
+<div id="coeficiente-de-correlación-de-pearson-cálculo-e-interpretación"
+class="section level1">
+<h1><strong>8. Coeficiente de correlación de Pearson (cálculo e
+interpretación)</strong></h1>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Calcular la matriz de correlación entre las variables</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>correlaciones <span class="ot">&lt;-</span> <span class="fu">cor</span>(caso3[, <span class="fu">c</span>(<span class="st">&quot;Distancia_km&quot;</span>, <span class="st">&quot;Num_Paquetes&quot;</span>, <span class="st">&quot;Velocidad_Trafico&quot;</span>, <span class="st">&quot;Tiempo_Entrega_min&quot;</span>)])</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>correlaciones <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="st">&quot;html&quot;</span>, <span class="at">caption =</span> <span class="st">&quot;Matriz de Correlación entre las Variables&quot;</span>, <span class="at">align =</span> <span class="st">&quot;c&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">&quot;center&quot;</span>)</span></code></pre></div>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Matriz de Correlación entre las Variables
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:center;">
+Distancia_km
+</th>
+<th style="text-align:center;">
+Num_Paquetes
+</th>
+<th style="text-align:center;">
+Velocidad_Trafico
+</th>
+<th style="text-align:center;">
+Tiempo_Entrega_min
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Distancia_km
+</td>
+<td style="text-align:center;">
+1.0000000
+</td>
+<td style="text-align:center;">
+0.8236120
+</td>
+<td style="text-align:center;">
+0.8226198
+</td>
+<td style="text-align:center;">
+0.7856618
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Num_Paquetes
+</td>
+<td style="text-align:center;">
+0.8236120
+</td>
+<td style="text-align:center;">
+1.0000000
+</td>
+<td style="text-align:center;">
+0.8415693
+</td>
+<td style="text-align:center;">
+0.8505744
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Velocidad_Trafico
+</td>
+<td style="text-align:center;">
+0.8226198
+</td>
+<td style="text-align:center;">
+0.8415693
+</td>
+<td style="text-align:center;">
+1.0000000
+</td>
+<td style="text-align:center;">
+0.7242845
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tiempo_Entrega_min
+</td>
+<td style="text-align:center;">
+0.7856618
+</td>
+<td style="text-align:center;">
+0.8505744
+</td>
+<td style="text-align:center;">
+0.7242845
+</td>
+<td style="text-align:center;">
+1.0000000
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="prueba-de-hipótesis-para-coeficiente-de-correlación"
+class="section level1">
+<h1><strong>9. Prueba de hipótesis para coeficiente de
+correlación</strong></h1>
+</div>
+<div id="validación-de-los-supuestos" class="section level1">
+<h1><strong>10. Validación de los supuestos</strong></h1>
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJlZ3Jlc2nDs24gTGluZWFsIE3Dumx0aXBsZSINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6IHRydWUNCiAgICB0b2NfZmxvYXQ6DQogICAgICBjb2xsYXBzZWQ6IHRydWUNCiAgICAgIHNtb290aF9zY3JvbGw6IHRydWUNCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgdGhlbWU6IGx1bWVuIA0KICAgIHRvY19kZXB0aDogMyANCiAgICBjc3M6IHN0eWxlcy5jc3MgICAgICAgICAgICAgDQotLS0NCmBgYHtyLCBlY2hvPUZBTFNFLHdhcm5pbmc9RkFMU0V9DQpsaWJyYXJ5KHJlYWR4bCkNCmxpYnJhcnkoa25pdHIpICAgICANCmxpYnJhcnkoa2FibGVFeHRyYSkNCmxpYnJhcnkoRFQpDQpgYGANCmBgYHtjc3MsZWNobz1GQUxTRX0NCi5jb2x1bW4ge2Rpc3BsYXk6ZmxleDt9DQpoMXtjb2xvcjpyZ2IoMjYsIDcyLCAxMTIpfQ0KaDJ7Y29sb3I6cmdiKDI2LCA3MiwgMTEyKX0NCmgze2NvbG9yOnJnYigyNiwgNzIsIDExMil9DQpgYGANCg0KIyAqKjEuIERhdG9zKioNCg0KYGBge3IsIHdhcm5pbmc9RkFMU0V9DQpjYXNvMyA8LSByZWFkX2V4Y2VsKCJDOi9Vc2Vycy9Vc2VyL0Rvd25sb2Fkcy9DYXNvMy54bHN4IikNCmNvbG5hbWVzKGNhc28zKSA8LSBjKCJJRF9QZWRpZG8iLCAiRGlzdGFuY2lhX2ttIiwgIk51bV9QYXF1ZXRlcyIsICJWZWxvY2lkYWRfVHJhZmljbyIsICJUaWVtcG9fRW50cmVnYV9taW4iKQ0KZGF0YXRhYmxlKGNhc28zLCANCiAgICAgICAgICBvcHRpb25zID0gbGlzdChwYWdlTGVuZ3RoID0gNSwgDQogICAgICAgICAgICAgICAgICAgICAgICAgYXV0b1dpZHRoID0gVFJVRSksDQogICAgICAgICAgY2FwdGlvbiA9ICJUYWJsYSAxLiBEYXRvcyBkZSBQZWRpZG9zIiwNCiAgICAgICAgICByb3duYW1lcyA9IEZBTFNFLCANCiAgICAgICAgICBjbGFzcyA9ICdkaXNwbGF5JywgDQogICAgICAgICAgZXNjYXBlID0gRkFMU0UpICU+JQ0KICBmb3JtYXRTdHlsZSgNCiAgICBjb2x1bW5zID0gbmFtZXMoY2FzbzMpLA0KICAgIGJvcmRlciA9ICdzb2xpZCAxcHggYmxhY2snLCANCiAgICB0ZXh0QWxpZ24gPSAnY2VudGVyJyAgDQogICkgJT4lDQogIGZvcm1hdFN0eWxlKA0KICAgIGNvbG5hbWVzKGNhc28zKSwNCiAgICBib3JkZXIgPSAnc29saWQgMXB4IGJsYWNrJywgDQogICAgdGV4dEFsaWduID0gJ2NlbnRlcicgDQogICkNCmBgYA0KDQpFbCBjb25qdW50byBkZSBkYXRvcyBjb25zdGEgZGUgNCB2YXJpYWJsZXMgcmVsZXZhbnRlczogRGlzdGFuY2lhX2ttLCBOdW1fUGFxdWV0ZXMsIFZlbG9jaWRhZF9UcmFmaWNvIHkgVGllbXBvX0VudHJlZ2FfbWluLCBjb24gdW4gdG90YWwgZGUgMjAgb2JzZXJ2YWNpb25lcywgc2llbmRvIGVsIElEX1BlZGlkbyBzb2xvIHVuIGlkZW50aWZpY2Fkb3Igc2luIHJlbGV2YW5jaWEgZW4gZWwgYW7DoWxpc2lzLiBMYSBzaXR1YWNpw7NuIGFib3JkYSBsYSBvcGVyYWNpw7NuIGxvZ8Otc3RpY2EgZGUgZW50cmVnYSBkZSBwZWRpZG9zIGEgZG9taWNpbGlvLCBjb25zaWRlcmFuZG8gZGl2ZXJzb3MgZmFjdG9yZXMgcXVlIHBvZHLDrWFuIGluZmx1aXIgZW4gZWwgdGllbXBvIHRvdGFsIGRlIGVudHJlZ2EuDQoNCiMjICoqMS4yIC4gQ29udGV4dG8geSBvYmpldGl2byoqDQoNCkVuIGVzdGUgZXN0dWRpbyBzZSBidXNjYSBwcmVkZWNpciBlbCB0aWVtcG8gZGUgZW50cmVnYSBkZSBwZWRpZG9zIGEgZG9taWNpbGlvIGEgcGFydGlyIGRlIGNhcmFjdGVyw61zdGljYXMgYXNvY2lhZGFzIGEgbGEgb3BlcmFjacOzbiBsb2fDrXN0aWNhLiBMYSBlbXByZXNhIGRpc3BvbmUgZGUgaW5mb3JtYWNpw7NuIHNvYnJlIGRpdmVyc29zIGZhY3RvcmVzIHF1ZSBwdWVkZW4gYWZlY3RhciBlbCB0aWVtcG8gdG90YWwgZGUgZW50cmVnYSwgY29tbyBsYSBkaXN0YW5jaWEgcmVjb3JyaWRhLCBlbCBuw7ptZXJvIGRlIHBhcXVldGVzIHRyYW5zcG9ydGFkb3MgeSBsYXMgY29uZGljaW9uZXMgZGVsIHRyw6FmaWNvLiBQYXJhIG1vZGVsYXIgZXN0YSBzaXR1YWNpw7NuLCBzZSBwbGFudGVhIHVuIGFuw6FsaXNpcyBkZSByZWdyZXNpw7NuIGxpbmVhbCBtw7psdGlwbGUsIHV0aWxpemFuZG8gY29tbzoNCg0KKipWYXJpYWJsZSBkZXBlbmRpZW50ZToqKg0KDQotICoqVGllbXBvX0VudHJlZ2FfbWluOioqIFRpZW1wbyBxdWUgdGFyZGEgZW4gY29tcGxldGFyc2UgY2FkYSBlbnRyZWdhIChlbiBtaW51dG9zKS4NCg0KKipWYXJpYWJsZXMgaW5kZXBlbmRpZW50ZXM6KioNCg0KLSAqKkRpc3RhbmNpYV9rbToqKiBEaXN0YW5jaWEgcmVjb3JyaWRhIGRlc2RlIGVsIHB1bnRvIGRlIGRlc3BhY2hvIGhhc3RhIGVsIGRlc3Rpbm8gKGVuIGtpbMOzbWV0cm9zKS4NCg0KLSAqKk51bV9QYXF1ZXRlczoqKiBOw7ptZXJvIGRlIHBhcXVldGVzIGluY2x1aWRvcyBlbiBlbCBwZWRpZG8uDQoNCi0gKipWZWxvY2lkYWRfVHJhZmljbzoqKiBWZWxvY2lkYWQgcHJvbWVkaW8gZGVsIHRyw6FmaWNvIGVuIGxhIHJ1dGEgZGUgZW50cmVnYSAoZW4ga2lsw7NtZXRyb3MgcG9yIGhvcmEpLg0KDQpFc3RlIGFuw6FsaXNpcyBwZXJtaXRpcsOhIGNvbXByZW5kZXIgY8OzbW8gaW5mbHV5ZW4gZXN0b3MgZmFjdG9yZXMgZW4gbG9zIHRpZW1wb3MgZGUgZW50cmVnYSB5IGNvbnN0cnVpciB1biBtb2RlbG8gcXVlIGZhY2lsaXRlIGxhIHByZWRpY2Npw7NuIHByZWNpc2EgZGUgZnV0dXJvcyBwZWRpZG9zLCBtZWpvcmFuZG8gbGEgZWZpY2llbmNpYSBsb2fDrXN0aWNhIHkgbGEgc2F0aXNmYWNjacOzbiBkZWwgY2xpZW50ZS4NCg0KIyAqKjIuICBFY3VhY2nDs24gZGUgcmVncmVzacOzbiBhanVzdGFkYSBlIGludGVycHJldGFjacOzbiBkZSBsb3MgcGFyw6FtZXRyb3MqKg0KDQpgYGB7cn0NCiMgQWp1c3RhciBlbCBtb2RlbG8gZGUgcmVncmVzacOzbiBsaW5lYWwgbcO6bHRpcGxlDQptb2RlbG8gPC0gbG0oVGllbXBvX0VudHJlZ2FfbWluIH4gRGlzdGFuY2lhX2ttICsgTnVtX1BhcXVldGVzICsgVmVsb2NpZGFkX1RyYWZpY28sIGRhdGEgPSBjYXNvMykNCg0KIyBWZXIgZWwgcmVzdW1lbiBkZWwgbW9kZWxvDQpzdW1tYXJ5KG1vZGVsbykNCmBgYA0KQSBwYXJ0aXIgZGUgbGEgc2FsaWRhIGRlbCBtb2RlbG8gZGUgcmVncmVzacOzbiBsaW5lYWwgYWp1c3RhZG8gZW4gUiwgb2J0ZW5lbW9zIGxhIHNpZ3VpZW50ZSBlY3VhY2nDs24gZGUgbGEgcmVjdGEgYWp1c3RhZGE6DQoNCiQkDQpcdGV4dHtUaWVtcG9fRW50cmVnYV9taW59ID0gNDAuNTE5MSArIDAuMzY0NSBcdGltZXMgXHRleHR7RGlzdGFuY2lhX2ttfSArIDEuNzk1OCBcdGltZXMgXHRleHR7TnVtX1BhcXVldGVzfSAtIDAuMTM2MSBcdGltZXMgXHRleHR7VmVsb2NpZGFkX1RyYWZpY299DQokJA0KDQpFbiBkb25kZTogDQoNCi0gKipQYXLDoW1ldHJvIFwoIGJfMCA9IDQwLjUxOTEgXCkgKEludGVyY2VwdG8pKio6IEVsIGludGVyY2VwdG8gZGUgNDAuNTE5MSByZXByZXNlbnRhIGVsICoqdGllbXBvIGRlIGVudHJlZ2EgYmFzZSoqIGN1YW5kbyB0b2RhcyBsYXMgdmFyaWFibGVzIGluZGVwZW5kaWVudGVzIChkaXN0YW5jaWEsIG7Dum1lcm8gZGUgcGFxdWV0ZXMgeSB2ZWxvY2lkYWQgZGVsIHRyw6FmaWNvKSBzb24gY2Vyby4gRXMgZGVjaXIsIHNpIGxhIGRpc3RhbmNpYSBmdWVyYSBjZXJvLCBubyBodWJpZXJhIHBhcXVldGVzIHkgbGEgdmVsb2NpZGFkIGRlbCB0csOhZmljbyBmdWVyYSBjZXJvLCBlbCB0aWVtcG8gZGUgZW50cmVnYSBzZXLDrWEgZGUgKio0MC41MTkxIG1pbnV0b3MqKi4NCg0KLSAqKlBhcsOhbWV0cm8gXCggYl8xID0gMC4zNjQ1IFwpIChEaXN0YW5jaWFfa20pKio6IEVzdGUgcGFyw6FtZXRybyBpbmRpY2EgcXVlICoqcG9yIGNhZGEga2lsw7NtZXRybyBhZGljaW9uYWwqKiBlbiBsYSBkaXN0YW5jaWEgZGUgZW50cmVnYSwgZWwgdGllbXBvIGRlIGVudHJlZ2EgYXVtZW50YXLDoSBlbiBwcm9tZWRpbyAqKjAuMzY0NSBtaW51dG9zKiouIA0KDQotICoqUGFyw6FtZXRybyBcKCBiXzIgPSAxLjc5NTggXCkgKE51bV9QYXF1ZXRlcykqKjogRXN0ZSBwYXLDoW1ldHJvIG11ZXN0cmEgcXVlICoqcG9yIGNhZGEgcGFxdWV0ZSBhZGljaW9uYWwqKiBlbiBlbCBwZWRpZG8sIGVsIHRpZW1wbyBkZSBlbnRyZWdhIGF1bWVudGFyw6EgZW4gcHJvbWVkaW8gKioxLjc5NTggbWludXRvcyoqLiANCg0KLSAqKlBhcsOhbWV0cm8gXCggYl8zID0gLTAuMTM2MSBcKSAoVmVsb2NpZGFkX1RyYWZpY28pKio6IEVzdGUgcGFyw6FtZXRybyBpbmRpY2EgcXVlICoqcG9yIGNhZGEgYXVtZW50byBkZSAxIGttL2ggZW4gbGEgdmVsb2NpZGFkIGRlbCB0csOhZmljbyoqLCBlbCB0aWVtcG8gZGUgZW50cmVnYSBkaXNtaW51aXLDoSBlbiBwcm9tZWRpbyAqKjAuMTM2MSBtaW51dG9zKiouDQoNCiMgKiozLiBQcm9uw7NzdGljYXIgZWwgdGllbXBvIGRlIGVudHJlZ2EgZGUgdW4gcGVkaWRvIHF1ZSBkZWJlIHJlY29ycmVyIDE4IGtpbMOzbWV0cm9zLCBsbGV2YSAxMCBwYXF1ZXRlcyB5IGVsIHRyw6FmaWNvIGVzIGRlIDQwS20vaC4qKg0KDQpgYGB7cn0NCiMgRGVmaW5pciBsb3MgcGFyw6FtZXRyb3MgZGUgbGEgcmVncmVzacOzbg0KYjAgPC0gNDAuNTE5MQ0KYjEgPC0gMC4zNjQ1DQpiMiA8LSAxLjc5NTgNCmIzIDwtIC0wLjEzNjENCg0KIyBWZWN0b3IgY29uIGxvcyB2YWxvcmVzIGRlIGxhcyB2YXJpYWJsZXMNCkRpc3RhbmNpYV9rbSA8LSAxOA0KTnVtX1BhcXVldGVzIDwtIDEwDQpWZWxvY2lkYWRfVHJhZmljbyA8LSA0MA0KDQojIEPDoWxjdWxvIGRlbCB0aWVtcG8gZGUgZW50cmVnYSANCnRpZW1wb19lbnRyZWdhIDwtIGIwICsgYjEgKiBEaXN0YW5jaWFfa20gKyBiMiAqIE51bV9QYXF1ZXRlcyArIGIzICogVmVsb2NpZGFkX1RyYWZpY28NCg0KY2F0KCJFbCB0aWVtcG8gZGUgZW50cmVnYSBwcm9ub3N0aWNhZG8gZXM6ICIsIHJvdW5kKHRpZW1wb19lbnRyZWdhLCAyKSwgIiBtaW51dG9zXG4iKQ0KYGBgDQoNCiMgKio0LiAgQW5vdmEqKg0KDQpFbCBBTk9WQSBlbiByZWdyZXNpw7NuIGxpbmVhbCBzZSB1dGlsaXphIHBhcmEgYW5hbGl6YXIgY8OzbW8gbGFzIHZhcmlhYmxlcyBpbmRlcGVuZGllbnRlcywgY29tbyBEaXN0YW5jaWFfa20sIE51bV9QYXF1ZXRlcyB5IFZlbG9jaWRhZF9UcmFmaWNvLCBjb250cmlidXllbiBhIGxhIHZhcmlhYmlsaWRhZCBkZWwgVGllbXBvX0VudHJlZ2FfbWluLiBFc3RlIGFuw6FsaXNpcyBkZXNjb21wb25lIGxhIHZhcmlhYmlsaWRhZCB0b3RhbCBlbiBkb3MgcGFydGVzOiB1bmEgZXhwbGljYWRhIHBvciBlbCBtb2RlbG8sIGEgdHJhdsOpcyBkZSBsYXMgdmFyaWFibGVzIHByZWRpY3RvcmFzLCB5IG90cmEgYXRyaWJ1aWRhIGFsIGVycm9yLCBxdWUgcmVwcmVzZW50YSBsYSB2YXJpYWJpbGlkYWQgbm8gZXhwbGljYWRhIHBvciBlbCBtb2RlbG8uDQoNCmBgYHtyfQ0KYW5vdmEgPC0gYW5vdmEobW9kZWxvKQ0KYW5vdmENCmBgYA0KDQpFbCBBTk9WQSBzZSByZWFsaXrDsyBwYXJhIGFuYWxpemFyIGPDs21vIGxhcyB0cmVzIHZhcmlhYmxlcyBpbmRlcGVuZGllbnRlcyAoRGlzdGFuY2lhX2ttLCBOdW1fUGFxdWV0ZXMsIHkgVmVsb2NpZGFkX1RyYWZpY28pIGFmZWN0YW4gZWwgVGllbXBvX0VudHJlZ2FfbWluLiBBbCBjb21iaW5hciBsYSBpbmZvcm1hY2nDs24gZGUgbGFzIHZhcmlhYmxlcyBpbmRlcGVuZGllbnRlcywgc2Ugb2J0dXZvIHVuYSDDum5pY2EgU3VtYSBkZSBDdWFkcmFkb3MgZGUgbGEgUmVncmVzacOzbiAoU0NSKSwgTWVkaWEgQ3VhZHLDoXRpY2EgZGUgbGEgUmVncmVzacOzbiAoTUNSKSB5IHN1cyBjb3JyZXNwb25kaWVudGVzIGdyYWRvcyBkZSBsaWJlcnRhZC4gRXN0b3MgdmFsb3JlcyBzZSBzdW1hcm9uIHBhcmEgZm9ybWFyIGxhIGJhc2UgZGVsIGFuw6FsaXNpcyB5IGNhbGN1bGFyIGVsIHZhbG9yIEYsIHF1ZSBub3MgcGVybWl0ZSBldmFsdWFyIGxhIHNpZ25pZmljYW5jaWEgZ2xvYmFsIGRlbCBtb2RlbG8uIEEgY29udGludWFjacOzbiwgc2UgcHJlc2VudGEgbGEgdGFibGEgY29uIGxvcyByZXN1bHRhZG9zIGRlbCBBTk9WQSwgbW9zdHJhbmRvIGPDs21vIGxhcyB2YXJpYWJsZXMgeSBlbCBlcnJvciBjb250cmlidXllbiBhIGxhIHZhcmlhYmlsaWRhZCB0b3RhbCBkZWwgdGllbXBvIGRlIGVudHJlZ2EuDQoNCmBgYHtyfQ0KIyBTdW1hIGRlIEN1YWRyYWRvcyBUb3RhbCAoU0NUKQ0Kc2N0IDwtIHN1bSgoY2FzbzMkVGllbXBvX0VudHJlZ2FfbWluIC0gbWVhbihjYXNvMyRUaWVtcG9fRW50cmVnYV9taW4pKV4yKSAgIyBTdW1hIGRlIEN1YWRyYWRvcyBUb3RhbA0KDQojIFN1bWEgZGUgQ3VhZHJhZG9zIGRlIGxhIFJlZ3Jlc2nDs24gKFNDUikNCnNjciA8LSBzdW0oKGZpdHRlZChtb2RlbG8pIC0gbWVhbihjYXNvMyRUaWVtcG9fRW50cmVnYV9taW4pKV4yKSAgIyBTdW1hIGRlIEN1YWRyYWRvcyBkZSBsYSBSZWdyZXNpw7NuDQoNCiMgU3VtYSBkZSBDdWFkcmFkb3MgZGVsIEVycm9yIChTQ0UpDQpzY2UgPC0gc2N0IC0gc2NyICAjIFN1bWEgZGUgQ3VhZHJhZG9zIGRlbCBFcnJvcg0KDQojIEdyYWRvcyBkZSBsaWJlcnRhZA0KZGZfcmVnIDwtIGxlbmd0aChjb2VmKG1vZGVsbykpIC0gMSAgIyBOw7ptZXJvIGRlIHZhcmlhYmxlcyBwcmVkaWN0b3JhcyAoc2luIGNvbnRhciBlbCBpbnRlcmNlcHRvKQ0KZGZfZXJyb3IgPC0gbGVuZ3RoKGNhc28zJFRpZW1wb19FbnRyZWdhX21pbikgLSBkZl9yZWcgLSAxDQpkZl90b3RhbCA8LSBsZW5ndGgoY2FzbzMkVGllbXBvX0VudHJlZ2FfbWluKSAtIDENCg0KIyBNZWRpYSBjdWFkcsOhdGljYSBkZSBsYSByZWdyZXNpw7NuIChNQ1IpIHkgbWVkaWEgY3VhZHLDoXRpY2EgZGVsIGVycm9yIChNQ0UpDQptY3IgPC0gc2NyIC8gZGZfcmVnDQptY2UgPC0gc2NlIC8gZGZfZXJyb3INCg0KIyBDw6FsY3VsbyBkZWwgdmFsb3IgRg0KZl92YWx1ZSA8LSBtY3IgLyBtY2UNCg0KIyBQLXZhbG9yIGFzb2NpYWRvIGFsIHZhbG9yIEYNCnBfdmFsdWUgPC0gMSAtIHBmKGZfdmFsdWUsIGRmX3JlZywgZGZfZXJyb3IpDQpwX3ZhbHVlX2Zvcm1hdHRlZCA8LSBmb3JtYXQocF92YWx1ZSwgc2NpZW50aWZpYyA9IFRSVUUsIGRpZ2l0cyA9IDQpDQoNCnJlc3VsdGFkb3NfYW5vdmEgPC0gZGF0YS5mcmFtZSgNCiAgRnVlbnRlID0gYygiUmVncmVzacOzbiAoTW9kZWxvKSIsICJFcnJvciAoUmVzaWR1b3MpIiwgIlRvdGFsIiksDQogIFN1bWFfQ3VhZHJhZG9zID0gYyhzY3IsIHNjZSwgc2N0KSwNCiAgR3JhZG9zX2RlX0xpYmVydGFkID0gYyhkZl9yZWcsIGRmX2Vycm9yLCBkZl90b3RhbCksDQogIE1lZGlhX0N1YWRyw6F0aWNhID0gYyhtY3IsIG1jZSwgTkEpLA0KICBWYWxvcl9GID0gYyhmX3ZhbHVlLCBOQSwgTkEpLA0KICBQX1ZhbG9yID0gYyhwX3ZhbHVlX2Zvcm1hdHRlZCwgTkEsIE5BKQ0KKQ0KDQpyZXN1bHRhZG9zX2Fub3ZhICU+JQ0KICBrYWJsZSgiaHRtbCIsIGNhcHRpb24gPSAiUmVzdWx0YWRvcyBkZWwgQU5PVkEgcGFyYSBlbCBNb2RlbG8gZGUgUmVncmVzacOzbiIsIGFsaWduID0gImMiLCBkaWdpdHMgPSAzKSAlPiUNCiAga2FibGVfc3R5bGluZyhib290c3RyYXBfb3B0aW9ucyA9IGMoInN0cmlwZWQiLCAiaG92ZXIiLCAicmVzcG9uc2l2ZSIpLCBmdWxsX3dpZHRoID0gRkFMU0UsIHBvc2l0aW9uID0gImNlbnRlciIpICU+JQ0KICBjb2x1bW5fc3BlYygxLCBib2xkID0gVFJVRSkgJT4lDQogIHJvd19zcGVjKDAsIGJvbGQgPSBUUlVFLCBiYWNrZ3JvdW5kID0gIiNEQkRCREIiKSAlPiUNCiAgcm93X3NwZWMoMToyLCBiYWNrZ3JvdW5kID0gIndoaXRlIikgJT4lDQogIGthYmxlX3N0eWxpbmcoYm9vdHN0cmFwX29wdGlvbnMgPSAiY29uZGVuc2VkIiwgZnVsbF93aWR0aCA9IEZBTFNFKQ0KYGBgDQoNCiMgKio1LiAgUHJ1ZWJhIEdsb2JhbCoqDQoNCkxhIHBydWViYSBnbG9iYWwgc2UgcmVhbGl6YSBwYXJhIGV2YWx1YXIgc2kgbGFzIHZhcmlhYmxlcyBpbmRlcGVuZGllbnRlcyAoRGlzdGFuY2lhX2ttLCBOdW1fUGFxdWV0ZXMgeSBWZWxvY2lkYWRfVHJhZmljbykgdGllbmVuIHVuIGltcGFjdG8gc2lnbmlmaWNhdGl2byBzb2JyZSBlbCBUaWVtcG9fRW50cmVnYV9taW4uIEEgdHJhdsOpcyBkZSBlc3RhIHBydWViYSBjb21wYXJhbW9zIGxhIHZhcmlhYmlsaWRhZCBleHBsaWNhZGEgcG9yIGVsIG1vZGVsbyBjb24gbGEgdmFyaWFiaWxpZGFkIG5vIGV4cGxpY2FkYSAoZXJyb3IpIHksIHVzYW5kbyBlbCBlc3RhZMOtc3RpY28gRiB5IGVsIHAtdmFsb3IsIGRldGVybWluYW1vcyBzaSBlbCBtb2RlbG8gZW4gc3UgY29uanVudG8gZXMgcmVsZXZhbnRlIHBhcmEgcHJlZGVjaXIgZWwgdGllbXBvIGRlIGVudHJlZ2EuDQoNCiMjICoqMS4gRm9ybXVsYWNpw7NuIGRlIGhpcMOzdGVzaXMqKg0KDQotICoqSGlww7N0ZXNpcyBudWxhIChcKEhfMFwpKSoqOiAgDQogIFxbDQogIEhfMDogXGJldGFfMSA9IFxiZXRhXzIgPSBcYmV0YV8zID0gMA0KICBcXSAgDQogIEVzdG8gc2lnbmlmaWNhIHF1ZSAqKm5pbmd1bmEqKiBkZSBsYXMgdmFyaWFibGVzIGluZGVwZW5kaWVudGVzIHRpZW5lIHVuIGVmZWN0byBzaWduaWZpY2F0aXZvIHNvYnJlIGVsICoqVGllbXBvX0VudHJlZ2FfbWluKiouDQoNCi0gKipIaXDDs3Rlc2lzIGFsdGVybmF0aXZhIChcKEhfMVwpKSoqOiAgDQogIFxbDQogIEhfMTogXHRleHR7QWwgbWVub3MgdW5vIGRlIGxvcyBjb2VmaWNpZW50ZXMgfSBcYmV0YV9pIFxuZXEgMA0KICBcXSAgDQogIA0KRXN0byBzaWduaWZpY2EgcXVlICoqYWwgbWVub3MgdW5hIGRlIGxhcyB2YXJpYWJsZXMqKiB0aWVuZSB1biBlZmVjdG8gc2lnbmlmaWNhdGl2byBzb2JyZSBlbCAqKlRpZW1wb19FbnRyZWdhX21pbioqLg0KDQojIyAqKjIuIE5pdmVsIGRlIHNpZ25pZmljYW5jaWEqKg0KDQpFbCAqKm5pdmVsIGRlIHNpZ25pZmljYW5jaWEqKiAoXChcYWxwaGFcKSkgZXMgZWwgdW1icmFsIHF1ZSB1dGlsaXphbW9zIHBhcmEgZGVjaWRpciBzaSBwb2RlbW9zIHJlY2hhemFyIGxhICoqaGlww7N0ZXNpcyBudWxhKiouIEVuIGVzdGUgY2FzbywgaGVtb3MgZXN0YWJsZWNpZG8gZWwgbml2ZWwgZGUgc2lnbmlmaWNhbmNpYSBlbiBcKCBcYWxwaGEgPSAwLjA1IFwpLCBsbyBxdWUgc2lnbmlmaWNhIHF1ZSBzaSBlbCAqKnAtdmFsb3IqKiBjYWxjdWxhZG8gZXMgbWVub3IgcXVlIDAuMDUsIHJlY2hhemFtb3MgbGEgaGlww7N0ZXNpcyBudWxhIHkgY29uY2x1aW1vcyBxdWUgYWwgbWVub3MgdW5hIGRlIGxhcyB2YXJpYWJsZXMgaW5kZXBlbmRpZW50ZXMgdGllbmUgdW4gZWZlY3RvIHNpZ25pZmljYXRpdm8gc29icmUgZWwgKipUaWVtcG9fRW50cmVnYV9taW4qKi4NCg0KIyMgKiozLiBFc3RhZMOtc3RpY28gZGUgcHJ1ZWJhKioNCg0KUGFyYSBlc3RvIHRlbmVtb3MgZW4gY3VlbnRhIGxvIHNpZ3VpZW50ZTogDQoNCiQkDQpGID0gXGZyYWN7XGZyYWN7XHRleHR7U3VtYSBkZSBDdWFkcmFkb3MgZGUgbGEgUmVncmVzacOzbiAoU0NSKX19e1x0ZXh0e2RmfV97XHRleHR7cmVnfX19fXtcZnJhY3tcdGV4dHtTdW1hIGRlIEN1YWRyYWRvcyBkZWwgRXJyb3IgKFNDRSl9fXtcdGV4dHtkZn1fe1x0ZXh0e2Vycm9yfX19fQ0KJCQNCnBvciB0YW50bzogDQoNCmBgYHtyfQ0KYW5vdmFfcmVzdWx0YWRvIDwtIGFub3ZhKG1vZGVsbykNCg0KIyBPYnRlbmVyIGxhcyBzdW1hcyBkZSBjdWFkcmFkb3MgZGUgbGEgcmVncmVzacOzbiAoU0NSKSB5IGRlbCBlcnJvciAoU0NFKQ0Kc2NyIDwtIGFub3ZhX3Jlc3VsdGFkbyRgU3VtIFNxYFsxXSArIGFub3ZhX3Jlc3VsdGFkbyRgU3VtIFNxYFsyXSArIGFub3ZhX3Jlc3VsdGFkbyRgU3VtIFNxYFszXSAjIFN1bWEgZGUgQ3VhZHJhZG9zIGRlIGxhIFJlZ3Jlc2nDs24NCnNjZSA8LSBhbm92YV9yZXN1bHRhZG8kYFN1bSBTcWBbNF0gICMgU3VtYSBkZSBDdWFkcmFkb3MgZGVsIEVycm9yDQoNCiMgT2J0ZW5lciBsb3MgZ3JhZG9zIGRlIGxpYmVydGFkIGRlIGxhIHJlZ3Jlc2nDs24gKGRmX3JlZykgeSBkZWwgZXJyb3IgKGRmX2Vycm9yKQ0KZGZfcmVnIDwtIGFub3ZhX3Jlc3VsdGFkbyREZlsxXSArIGFub3ZhX3Jlc3VsdGFkbyREZlsyXSArIGFub3ZhX3Jlc3VsdGFkbyREZlszXSAjIEdyYWRvcyBkZSBsaWJlcnRhZCBkZSBsYSByZWdyZXNpw7NuDQpkZl9lcnJvciA8LSBhbm92YV9yZXN1bHRhZG8kRGZbNF0gICMgR3JhZG9zIGRlIGxpYmVydGFkIGRlbCBlcnJvcg0KDQojIEPDoWxjdWxvIGRlbCB2YWxvciBGDQp2YWxvcl9GIDwtIChzY3IgLyBkZl9yZWcpIC8gKHNjZSAvIGRmX2Vycm9yKQ0KY2F0KCJFbCB2YWxvciBGIGNhbGN1bGFkbyBlczoiLCByb3VuZCh2YWxvcl9GLCAyKSwgIlxuIikNCmBgYA0KDQpFcyBkZWNpcjogDQoNCiQkDQpGID0gXGZyYWN7XGZyYWN7XHRleHR7U0NSfX17XHRleHR7ZGZ9X3tcdGV4dHtyZWd9fX19e1xmcmFje1x0ZXh0e1NDRX19e1x0ZXh0e2RmfV97XHRleHR7ZXJyb3J9fX19ID0gXGZyYWN7XGZyYWN7MTMzMi4yMjd9ezN9fXtcZnJhY3s0NDYuOTczfXsxNn19ID0gMTUuOQ0KJCQNCg0KIyMgKio0LiBDcml0ZXJpbyBkZSBkZWNpc2nDs24qKg0KDQpgYGB7cn0NCiMgQ2FsY3VsYXIgZWwgdmFsb3IgcCBhc29jaWFkbyBhbCB2YWxvciBGDQpwX3ZhbHVlIDwtIDEgLSBwZih2YWxvcl9GLCBkZl9yZWcsIGRmX2Vycm9yKQ0KDQpjYXQoIkVsIHZhbG9yIHAgYXNvY2lhZG8gYWwgdmFsb3IgRiBjYWxjdWxhZG8gZXM6IiwgZm9ybWF0KHBfdmFsdWUsIHNjaWVudGlmaWMgPSBUUlVFKSwgIlxuIikNCmBgYA0KIyMgKio1LiBJbnRlcnByZXRhY2nDs24qKg0KDQpTaSBlbCB2YWxvciBwIGVzIG1lbm9yIHF1ZSBlbCBuaXZlbCBkZSBzaWduaWZpY2FuY2lhIFwoXGFscGhhID0gMC4wNVwpLCByZWNoYXphbW9zIGxhIGhpcMOzdGVzaXMgbnVsYSAoXChIXzBcKSkgeSBjb25jbHVpbW9zIHF1ZSAqKmFsIG1lbm9zIHVuYSBkZSBsYXMgdmFyaWFibGVzIGluZGVwZW5kaWVudGVzKiogdGllbmUgdW4gaW1wYWN0byBzaWduaWZpY2F0aXZvIHNvYnJlIGVsICoqVGllbXBvX0VudHJlZ2FfbWluKiouIEVuIGNhc28gY29udHJhcmlvLCBzaSBlbCB2YWxvciBwIGVzIG1heW9yIG8gaWd1YWwgYSAwLjA1LCBubyByZWNoYXphbW9zIGxhIGhpcMOzdGVzaXMgbnVsYS4gRW4gbnVlc3RybyBjYXNvLCBlbCB2YWxvciBwIGNhbGN1bGFkbyBlcyBcKDQuNjcgXHRpbWVzIDEwXnstNX1cKSwgcXVlIGVzIG1lbm9yIHF1ZSBcKFxhbHBoYSA9IDAuMDVcKS4gUG9yIGxvIHRhbnRvLCAqKnJlY2hhemFtb3MgbGEgaGlww7N0ZXNpcyBudWxhKiogeSBjb25jbHVpbW9zIHF1ZSBlbCBtb2RlbG8gZXMgc2lnbmlmaWNhdGl2by4NCg0KIyMgKio2LiBDb25jbHVzacOzbioqDQpFbCBhbsOhbGlzaXMgZGVsIG1vZGVsbyBkZSByZWdyZXNpw7NuIG11ZXN0cmEgcXVlIGFsIG1lbm9zIHVuYSBkZSBsYXMgdmFyaWFibGVzIHByZWRpY3RvcmFzIHRpZW5lIHVuIGltcGFjdG8gc2lnbmlmaWNhdGl2byBzb2JyZSBlbCBUaWVtcG9fRW50cmVnYV9taW4uIERhZG8gcXVlIGVsIHAtdmFsb3IgZXMgbWVub3IgcXVlIGVsIG5pdmVsIGRlIHNpZ25pZmljYW5jaWEgKM6xPTAuMDUpLCByZWNoYXphbW9zIGxhIGhpcMOzdGVzaXMgbnVsYSB5IGNvbmNsdWltb3MgcXVlIGVsIG1vZGVsbyBlcyBlc3RhZMOtc3RpY2FtZW50ZSBzaWduaWZpY2F0aXZvIHBhcmEgcHJlZGVjaXIgZWwgdGllbXBvIGRlIGVudHJlZ2EuDQoNCiMgKio2LiAgUHJ1ZWJhcyBpbmRpdmlkdWFsZXMgc29icmUgbGFzIHZhcmlhYmxlcyoqDQoNCkEgZGlmZXJlbmNpYSBkZSBsYSBwcnVlYmEgZ2xvYmFsLCBxdWUgZXZhbMO6YSBlbCBpbXBhY3RvIGNvbmp1bnRvIGRlIHRvZGFzIGxhcyB2YXJpYWJsZXMsIGVuIGVzdGEgc2VjY2nDs24gYW5hbGl6YW1vcyBjYWRhIHZhcmlhYmxlIGluZGVwZW5kaWVudGUgcG9yIHNlcGFyYWRvLiBQYXJhIGNhZGEgdW5hLCBjb21wYXJhbW9zIGVsIHZhbG9yIHAgY29uIGVsIG5pdmVsIGRlIHNpZ25pZmljYW5jaWEgKPCdm7w9IDAuMDUgcGFyYSBkZXRlcm1pbmFyIHNpIHJlY2hhemFtb3MgbGEgaGlww7N0ZXNpcyBudWxhIHkgY29uY2x1aW1vcyBxdWUgbGEgdmFyaWFibGUgdGllbmUgdW4gaW1wYWN0byBzaWduaWZpY2F0aXZvIHNvYnJlIGVsIFRpZW1wb19FbnRyZWdhX21pbi4NCg0KYGBge3J9DQojIFJlc3VtZW4gZGVsIG1vZGVsbw0Kc3VtbWFyeV9yZXN1bHRhZG8gPC0gc3VtbWFyeShtb2RlbG8pDQoNCiMgRXh0cmFlciBjb2VmaWNpZW50ZXMsIHZhbG9yZXMgcCB5IGdyYWRvcyBkZSBsaWJlcnRhZA0KY29lZmljaWVudGVzIDwtIHN1bW1hcnlfcmVzdWx0YWRvJGNvZWZmaWNpZW50cw0KDQojIERlZmluaXIgZWwgbml2ZWwgZGUgc2lnbmlmaWNhbmNpYQ0KYWxwaGEgPC0gMC4wNQ0KDQpoaXBvdGVzaXNfdGFibGUgPC0gZGF0YS5mcmFtZSgNCiAgVmFyaWFibGUgPSBjKCJEaXN0YW5jaWFfa20iLCAiTnVtX1BhcXVldGVzIiwgIlZlbG9jaWRhZF9UcmFmaWNvIiksDQogIEhpcG90ZXNpc19udWxhID0gYygiJEhfMDogXFxiZXRhXzEgPSAwJCIsICIkSF8wOiBcXGJldGFfMiA9IDAkIiwgIiRIXzA6IFxcYmV0YV8zID0gMCQiKSwNCiAgSGlwb3Rlc2lzX2FsdGVybmF0aXZhID0gYygiJEhfMTogXFxiZXRhXzEgXFxuZXEgMCQiLCAiJEhfMTogXFxiZXRhXzIgXFxuZXEgMCQiLCAiJEhfMTogXFxiZXRhXzMgXFxuZXEgMCQiKSwNCiAgTml2ZWxfc2lnbmlmaWNhbmNpYSA9IHJlcCgiMC4wNSIsIDMpLA0KICBWYWxvcl90ID0gYyhjb2VmaWNpZW50ZXNbMiwgM10sIGNvZWZpY2llbnRlc1szLCAzXSwgY29lZmljaWVudGVzWzQsIDNdKSwgICMgVmFsb3JlcyB0DQogIGRmID0gYyhzdW1tYXJ5X3Jlc3VsdGFkbyRkZlsyXSwgc3VtbWFyeV9yZXN1bHRhZG8kZGZbMl0sIHN1bW1hcnlfcmVzdWx0YWRvJGRmWzJdKSwgICMgR3JhZG9zIGRlIGxpYmVydGFkDQogIFZhbG9yX3AgPSBjKGNvZWZpY2llbnRlc1syLCA0XSwgY29lZmljaWVudGVzWzMsIDRdLCBjb2VmaWNpZW50ZXNbNCwgNF0pLA0KICBDb21wYXJhY2lvbiA9IGMoDQogICAgaWZlbHNlKGNvZWZpY2llbnRlc1syLCA0XSA8IGFscGhhLCAiVmFsb3IgcCA8IGFsZmEiLCAiVmFsb3IgcCA+IGFsZmEiKSwNCiAgICBpZmVsc2UoY29lZmljaWVudGVzWzMsIDRdIDwgYWxwaGEsICJWYWxvciBwIDwgYWxmYSIsICJWYWxvciBwID4gYWxmYSIpLA0KICAgIGlmZWxzZShjb2VmaWNpZW50ZXNbNCwgNF0gPCBhbHBoYSwgIlZhbG9yIHAgPCBhbGZhIiwgIlZhbG9yIHAgPiBhbGZhIikNCiAgKSwNCiAgRGVjaXNpw7NuID0gYygNCiAgICBpZmVsc2UoY29lZmljaWVudGVzWzIsIDRdIDwgYWxwaGEsICJSZWNoYXphbW9zICRIXzAkIiwgIk5vIHJlY2hhemFtb3MgJEhfMCQiKSwNCiAgICBpZmVsc2UoY29lZmljaWVudGVzWzMsIDRdIDwgYWxwaGEsICJSZWNoYXphbW9zICRIXzAkIiwgIk5vIHJlY2hhemFtb3MgJEhfMCQiKSwNCiAgICBpZmVsc2UoY29lZmljaWVudGVzWzQsIDRdIDwgYWxwaGEsICJSZWNoYXphbW9zICRIXzAkIiwgIk5vIHJlY2hhemFtb3MgJEhfMCQiKQ0KICApLA0KICBzdHJpbmdzQXNGYWN0b3JzID0gRkFMU0UNCikNCg0KaGlwb3Rlc2lzX3RhYmxlICU+JQ0KICBrYWJsZSgiaHRtbCIsIGNhcHRpb24gPSAiUHJ1ZWJhIGRlIEhpcMOzdGVzaXMgcGFyYSBsYXMgVmFyaWFibGVzIEluZGVwZW5kaWVudGVzIiwgYWxpZ24gPSAiYyIpICU+JQ0KICBrYWJsZV9zdHlsaW5nKGJvb3RzdHJhcF9vcHRpb25zID0gYygic3RyaXBlZCIsICJob3ZlciIpLCBmdWxsX3dpZHRoID0gRkFMU0UsIHBvc2l0aW9uID0gImNlbnRlciIpDQpgYGANCkNvbW8gc2UgcHVlZGUgb2JzZXJ2YXIsIE51bV9QYXF1ZXRlcyBlcyBsYSDDum5pY2EgdmFyaWFibGUgcXVlIHRpZW5lIHVuIGltcGFjdG8gc2lnbmlmaWNhdGl2byBzb2JyZSBlbCBUaWVtcG9fRW50cmVnYV9taW4gc2Vnw7puIGxvcyByZXN1bHRhZG9zIGRlIGxhIHBydWViYSBkZSBoaXDDs3Rlc2lzLiBFbiBjYW1iaW8sIERpc3RhbmNpYV9rbSB5IFZlbG9jaWRhZF9UcmFmaWNvIG5vIG11ZXN0cmFuIHVuYSByZWxhY2nDs24gc2lnbmlmaWNhdGl2YSBjb24gZWwgdGllbXBvIGRlIGVudHJlZ2EsIGVzdG8gc3VnaWVyZSBxdWUsIGVuIGVsIGNvbnRleHRvIGRlIGVzdGUgbW9kZWxvIGRlIHJlZ3Jlc2nDs24sIGVsIG7Dum1lcm8gZGUgcGFxdWV0ZXMgZXMgZWwgZmFjdG9yIG3DoXMgcmVsZXZhbnRlIHBhcmEgcHJlZGVjaXIgZWwgVGllbXBvX0VudHJlZ2FfbWluLg0KDQojICoqNy4gIENvZWZpY2llbnRlIGRlIGRldGVybWluYWNpw7NuKioNCg0KYGBge3J9DQoNCnNjZSA8LSBzdW0oYW5vdmFfcmVzdWx0YWRvJGBTdW0gU3FgWzRdKSANCnNjdCA8LSBzdW0oYW5vdmFfcmVzdWx0YWRvJGBTdW0gU3FgKSAgICAgDQoNCiMgTsO6bWVybyBkZSBvYnNlcnZhY2lvbmVzIHkgcHJlZGljdG9yZXMNCm4gPC0gbGVuZ3RoKGNhc28zJFRpZW1wb19FbnRyZWdhX21pbikNCmsgPC0gbGVuZ3RoKGNvZWYobW9kZWxvKSkgLSAxICAjIE7Dum1lcm8gZGUgcHJlZGljdG9yZXMgKHNpbiBjb250YXIgZWwgaW50ZXJjZXB0bykNCg0KIyBDw6FsY3VsbyBwYXJhIFJeMiBhanVzdGFkbw0Kcl9zcXVhcmVkX2FqdXN0YWRvIDwtIDEgLSAoKHNjZSAvIChuIC0gayAtIDEpKSAvIChzY3QgLyAobiAtIDEpKSkNCg0KY2F0KCJFbCB2YWxvciBkZSBSXjIgYWp1c3RhZG8gZXM6Iiwgcm91bmQocl9zcXVhcmVkX2FqdXN0YWRvLCA0KSwgIlxuIikNCmBgYA0KDQpFbCBcKCBSXjJfe1x0ZXh0e2FqdXN0YWRvfX0gPSAwLjcwMTcgXCkgaW5kaWNhIHF1ZSBlbCAqKjcwLjE3JSoqIGRlIGxhIHZhcmlhYmlsaWRhZCBlbiBlbCAqKlRpZW1wb19FbnRyZWdhX21pbioqIGVzIGV4cGxpY2FkYSBwb3IgbGFzIHZhcmlhYmxlcyBkZWwgbW9kZWxvLiBFc3RlIHZhbG9yIHJlZmxlamEgdW4gYWp1c3RlIHJhem9uYWJsZSBkZWwgbW9kZWxvLCBzdWdpcmllbmRvIHF1ZSBsYXMgdmFyaWFibGVzIHNlbGVjY2lvbmFkYXMgdGllbmVuIHVuIGltcGFjdG8gbm90YWJsZSBlbiBsYSBwcmVkaWNjacOzbiBkZWwgdGllbXBvIGRlIGVudHJlZ2EuIFNpbiBlbWJhcmdvLCBoYXkgdW4gcG9yY2VudGFqZSBzaWduaWZpY2F0aXZvIGRlIGxhIHZhcmlhYmlsaWRhZCAoYXByb3hpbWFkYW1lbnRlIGVsICoqMjkuODMlKiopIHF1ZSBubyBlc3TDoSBzaWVuZG8gZXhwbGljYWRvIHBvciBlbCBtb2RlbG8sIGxvIHF1ZSBzdWdpZXJlIHF1ZSBoYXkgb3Ryb3MgZmFjdG9yZXMgbm8gY29udGVtcGxhZG9zIGVuIGVsIGFuw6FsaXNpcy4NCg0KIyAqKjguICBDb2VmaWNpZW50ZSBkZSBjb3JyZWxhY2nDs24gZGUgUGVhcnNvbiAoY8OhbGN1bG8gZSBpbnRlcnByZXRhY2nDs24pKioNCg0KYGBge3J9DQojIENhbGN1bGFyIGxhIG1hdHJpeiBkZSBjb3JyZWxhY2nDs24gZW50cmUgbGFzIHZhcmlhYmxlcw0KY29ycmVsYWNpb25lcyA8LSBjb3IoY2FzbzNbLCBjKCJEaXN0YW5jaWFfa20iLCAiTnVtX1BhcXVldGVzIiwgIlZlbG9jaWRhZF9UcmFmaWNvIiwgIlRpZW1wb19FbnRyZWdhX21pbiIpXSkNCg0KY29ycmVsYWNpb25lcyAlPiUNCiAga2FibGUoImh0bWwiLCBjYXB0aW9uID0gIk1hdHJpeiBkZSBDb3JyZWxhY2nDs24gZW50cmUgbGFzIFZhcmlhYmxlcyIsIGFsaWduID0gImMiKSAlPiUNCiAga2FibGVfc3R5bGluZyhib290c3RyYXBfb3B0aW9ucyA9IGMoInN0cmlwZWQiLCAiaG92ZXIiLCAiY29uZGVuc2VkIiksIGZ1bGxfd2lkdGggPSBGQUxTRSwgcG9zaXRpb24gPSAiY2VudGVyIikNCmBgYA0KDQojICoqOS4gIFBydWViYSBkZSBoaXDDs3Rlc2lzIHBhcmEgY29lZmljaWVudGUgZGUgY29ycmVsYWNpw7NuKioNCg0KDQojICoqMTAuIFZhbGlkYWNpw7NuIGRlIGxvcyBzdXB1ZXN0b3MqKg0K</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("index.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

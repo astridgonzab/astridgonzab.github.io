@@ -1,0 +1,46 @@
+header {
+    background-color: #003366; /* Fondo azul oscuro */
+    color: white; /* Color del texto */
+    padding: 15px 20px; /* Espaciado dentro de la franja */
+    box-sizing: border-box;
+    z-index: 1000; /* Asegura que esté encima de otros elementos */
+    display: flex;
+    justify-content: space-between; /* Separar título y autores */
+    align-items: center; /* Centra el contenido verticalmente */
+    font-family: Arial, sans-serif; /* Fuente estándar */
+}
+
+/* Título a la izquierda */
+header .navbar-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Nombres de los autores a la derecha */
+header .navbar-right {
+    font-size: 16px;
+    text-align: right;
+}
+
+/* Evitar que el contenido se oculte bajo la franja fija */
+body {
+    padding-top: 60px; /* Espacio suficiente para evitar que la franja tape contenido */
+    text-align: justify; /* Justificar todo el contenido de la página */
+}
+
+/* Justificación del texto para los párrafos */
+p {
+    text-align: justify; /* Justificar los párrafos */
+    margin-bottom: 1.5em; /* Espaciado entre párrafos */
+    font-size: 16px;
+    line-height: 1.6; /* Mejorar la legibilidad */
+}
+
+/* Títulos con color azul oscuro */
+h1, h2, h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #003366; /* Color azul oscuro */
+    margin-bottom: 15px;
+    text-align: justify; /* Justificar los títulos */
+}

@@ -1,0 +1,20 @@
+name: "Análisis de Caso 3"
+output_dir: "."
+output:
+  html_document:
+    theme: yeti
+    highlight: tango
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    css: styles.css  
+
+navbar:
+  title: "📊 Análisis de caso 3"
+  left:
+    - text: "Descripción del modelo de regresión"
+      icon: fa-chart-bar
+      href: index.html
+  right:
+    - text: "Autores: Carolina Gonzalez Becerra, Nicole García Bernal"
+      href: "#"
