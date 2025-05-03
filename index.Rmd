@@ -16,6 +16,7 @@ library(readxl)
 library(knitr)     
 library(kableExtra)
 library(DT)
+library(lmtest)
 ```
 
 # **1. Datos**
@@ -224,12 +225,14 @@ p_value <- 1 - pf(valor_F, df_reg, df_error)
 
 cat("El valor p asociado al valor F calculado es:", format(p_value, scientific = TRUE), "\n")
 ```
+
 ## **5. Interpretación**
 
 Si el valor p es menor que el nivel de significancia \(\alpha = 0.05\), rechazamos la hipótesis nula (\(H_0\)) y concluimos que **al menos una de las variables independientes** tiene un impacto significativo sobre el **Tiempo_Entrega_min**. En caso contrario, si el valor p es mayor o igual a 0.05, no rechazamos la hipótesis nula. En nuestro caso, el valor p calculado es \(4.67 \times 10^{-5}\), que es menor que \(\alpha = 0.05\). Por lo tanto, **rechazamos la hipótesis nula** y concluimos que el modelo es significativo.
 
 ## **6. Conclusión**
-El análisis del modelo de regresión muestra que al menos una de las variables predictoras tiene un impacto significativo sobre el Tiempo_Entrega_min. Dado que el p-valor es menor que el nivel de significancia (α=0.05), rechazamos la hipótesis nula y concluimos que el modelo es estadísticamente significativo para predecir el tiempo de entrega.
+
+El valor p asociado al valor F calculado es 4.67e-05, mucho menor que el nivel de significancia de 0.05, lo que sugiere que el modelo en su conjunto es relevante, ya que existe una relación significativa entre las variables independientes y el Tiempo_Entrega_min, lo que indica que al menos una de las variables tiene un impacto importante en la predicción del tiempo de entrega.
 
 # **6.  Pruebas individuales sobre las variables**
 
@@ -242,7 +245,7 @@ summary_resultado <- summary(modelo)
 # Extraer coeficientes, valores p y grados de libertad
 coeficientes <- summary_resultado$coefficients
 
-# Definir el nivel de significancia
+# Nivel de significancia
 alpha <- 0.05
 
 hipotesis_table <- data.frame(
@@ -270,12 +273,13 @@ hipotesis_table %>%
   kable("html", caption = "Prueba de Hipótesis para las Variables Independientes", align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE, position = "center")
 ```
-Como se puede observar, Num_Paquetes es la única variable que tiene un impacto significativo sobre el Tiempo_Entrega_min según los resultados de la prueba de hipótesis. En cambio, Distancia_km y Velocidad_Trafico no muestran una relación significativa con el tiempo de entrega, esto sugiere que, en el contexto de este modelo de regresión, el número de paquetes es el factor más relevante para predecir el Tiempo_Entrega_min.
+
+En el análisis de las pruebas de hipótesis, se observó que el número de paquetes es la única variable que tiene un impacto significativo en el tiempo de entrega de los pedidos, con un valor p de 0.0165, lo que nos permite rechazar la hipótesis nula. Esto sugiere que, a medida que aumenta el número de paquetes, el tiempo de entrega también se incrementa de manera notable. Por otro lado, tanto la distancia recorrida como la velocidad del tráfico no muestran una relación significativa con el tiempo de entrega, ya que sus valores p son 0.2246 y 0.6796 respectivamente, ambos mayores que el nivel de significancia de 0.05, lo que significa que no hay suficiente evidencia para afirmar que estas variables influyan de manera relevante en el tiempo de entrega. En resumen, el número de paquetes emerge como el factor más determinante en el tiempo de entrega, mientras que la distancia y la velocidad del tráfico no parecen tener un impacto considerable, al menos dentro del contexto de este modelo de regresión.
 
 # **7.  Coeficiente de determinación**
 
 ```{r}
-
+# Cálculo de las sumas de cuadrados
 sce <- sum(anova_resultado$`Sum Sq`[4]) 
 sct <- sum(anova_resultado$`Sum Sq`)     
 
@@ -294,15 +298,225 @@ El \( R^2_{\text{ajustado}} = 0.7017 \) indica que el **70.17%** de la variabili
 # **8.  Coeficiente de correlación de Pearson (cálculo e interpretación)**
 
 ```{r}
-# Calcular la matriz de correlación entre las variables
+correlacion <- sqrt(r_squared_ajustado)
+cat("El coeficiente de correlación es:",round(correlacion, 4))
+```
+El coeficiente de correlación de 0.8377 indica una relación fuerte y positiva (directa) entre las variables, esto significa que, en general, cuando una variable aumenta, el tiempo de entrega también tiende a aumentar. Aunque este valor refleja una relación lineal entre las variables, es importante recordar que se trata de una correlación múltiple, lo que significa que esta relación involucra el comportamiento conjunto de todas las variables del modelo. Para verificar mejor esta correlación, se realizará un análisis detallado de cada variable independiente en relación con la variable dependiente.
+
+```{r}
+# Matriz de correlación entre las variables
 correlaciones <- cor(caso3[, c("Distancia_km", "Num_Paquetes", "Velocidad_Trafico", "Tiempo_Entrega_min")])
 
 correlaciones %>%
   kable("html", caption = "Matriz de Correlación entre las Variables", align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center")
 ```
+En la matriz de correlación se puede observar que todas las relaciones entre las variables independientes y la variable dependiente, Tiempo_Entrega_min, son directas, lo que significa que a medida que aumenta el valor de una variable independiente, el tiempo de entrega también tiende a aumentar.
+
+La relación entre Distancia_km y Tiempo_Entrega_min tiene una correlación de 0.7857, lo que indica una relación positiva moderada a fuerte, esto significa que, en general, cuando la distancia recorrida aumenta, también lo hace el tiempo de entrega, lo cual tiene sentido en términos logísticos.
+
+Con respecto a Num_Paquetes y Tiempo_Entrega_min, la correlación es aún más fuerte (0.8506), lo que refleja una relación directa muy fuerte, a medida que el número de paquetes en el pedido crece, el tiempo de entrega aumenta significativamente, lo que es esperado debido al mayor esfuerzo logístico requerido para manejar más paquetes.
+
+Por último, la relación entre Velocidad_Trafico y Tiempo_Entrega_min tiene una correlación de 0.7243, lo que indica una relación positiva moderada a fuerte, aunque no tan fuerte como las otras dos relaciones, aún muestra que un aumento en la velocidad del tráfico puede llevar a un mayor tiempo de entrega, aunque con un impacto más pequeño en comparación con las otras variables.
+
+En resumen, todas las correlaciones observadas son directas, lo que significa que un aumento en las variables independientes tiende a resultar en un aumento del tiempo de entrega, aunque la intensidad de la relación varía entre ellas.
 
 # **9.  Prueba de hipótesis para coeficiente de correlación**
 
+```{r}
+# Pruebas de correlación de Pearson entre las variables
+cor_test_1 <- cor.test(caso3$Distancia_km, caso3$Tiempo_Entrega_min, method = "pearson")
+cor_test_2 <- cor.test(caso3$Num_Paquetes, caso3$Tiempo_Entrega_min, method = "pearson")
+cor_test_3 <- cor.test(caso3$Velocidad_Trafico, caso3$Tiempo_Entrega_min, method = "pearson")
+
+# Tabla de resultados de la prueba de hipótesis para cada par de variables
+hipotesis_table_correlacion <- data.frame(
+  Variable_1 = c("Distancia_km", "Num_Paquetes", "Velocidad_Trafico"),
+  Variable_2 = rep("Tiempo_Entrega_min", 3),
+  Hipotesis_nula = c("$H_0: \\rho = 0$", "$H_0: \\rho = 0$", "$H_0: \\rho = 0$"),
+  Hipotesis_alternativa = c("$H_1: \\rho \\neq 0$", "$H_1: \\rho \\neq 0$", "$H_1: \\rho \\neq 0$"),
+  Nivel_significancia = rep("0.05", 3),
+  Valor_t = c(cor_test_1$statistic, cor_test_2$statistic, cor_test_3$statistic),
+  df = rep(cor_test_1$parameter, 3),  # Grados de libertad
+  Valor_p = c(cor_test_1$p.value, cor_test_2$p.value, cor_test_3$p.value),
+  Comparacion = c(
+    ifelse(cor_test_1$p.value < alpha, "Valor p < alfa", "Valor p > alfa"),
+    ifelse(cor_test_2$p.value < alpha, "Valor p < alfa", "Valor p > alfa"),
+    ifelse(cor_test_3$p.value < alpha, "Valor p < alfa", "Valor p > alfa")
+  ),
+  Decisión = c(
+    ifelse(cor_test_1$p.value < alpha, "Rechazamos $H_0$", "No rechazamos $H_0$"),
+    ifelse(cor_test_2$p.value < alpha, "Rechazamos $H_0$", "No rechazamos $H_0$"),
+    ifelse(cor_test_3$p.value < alpha, "Rechazamos $H_0$", "No rechazamos $H_0$")
+  ),
+  stringsAsFactors = FALSE
+)
+
+hipotesis_table_correlacion <- hipotesis_table_correlacion[, -2]
+
+library(knitr)
+library(kableExtra)
+kable(hipotesis_table_correlacion, "html", caption = "Prueba de Hipótesis para los Coeficientes de Correlación de Pearson", align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE, position = "center")
+```
+
+Los resultados de la prueba de hipótesis para los coeficientes de correlación de Pearson entre las variables independientes y la variable dependiente muestran que todas las variables, Distancia_km, Num_Paquetes y Velocidad_Trafico, tienen un valor p mucho menor que el nivel de significancia estándar de 0.05. Esto indica que todas las variables tienen una relación lineal significativa con el Tiempo_Entrega_min.
+
+La correlación entre Distancia_km y Tiempo_Entrega_min es fuerte, con un valor t de 5.39 y un valor p de 0.0000404, lo que muestra una relación positiva significativa. De manera similar, Num_Paquetes también tiene una correlación significativa, con un valor t de 6.86 y un valor p de 0.0000020. Finalmente, Velocidad_Trafico también tiene una relación significativa, aunque con una correlación un poco más baja en comparación con las otras dos variables, mostrando un valor t de 4.46 y un valor p de 0.00003048.
+
+Aunque todas las variables muestran una relación significativa con el tiempo de entrega, es importante notar que, en la prueba de hipótesis de los coeficientes en el modelo de regresión, solo Num_Paquetes fue estadísticamente significativa. Esto puede sugerir que, cuando se consideran todas las variables de manera conjunta, el impacto de Distancia_km y Velocidad_Trafico se ve atenuado por la presencia de otras variables en el modelo, mientras que Num_Paquetes sigue siendo el factor más relevante para predecir el tiempo de entrega.
+
 
 # **10. Validación de los supuestos**
+
+## **Linealidad**
+
+Para validar el supuesto de linealidad en nuestro modelo de regresión, utilizaremos un gráfico que muestra los residuos en función de los ajustes (valores predichos), si la relación entre las variables independientes y la variable dependiente es lineal, los puntos en el gráfico deben distribuirse aleatoriamente alrededor de la línea horizontal en cero, sin formar patrones específicos, un patrón sistemático en este gráfico podría indicar que la relación no es lineal, lo que sugeriría que el modelo de regresión lineal no es el más adecuado para los datos.
+
+```{r}
+# Gráfico de residuos vs ajustes para verificar la linealidad
+plot(modelo$fitted.values, modelo$residuals, 
+     main = "Residuos vs Ajustes", 
+     xlab = "Ajustes (Valores Predichos)", 
+     ylab = "Residuos", 
+     pch = 16, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+```
+
+Como se observa, en el gráfico de Residuos vs Ajustes, los puntos se distribuyen de manera aleatoria alrededor de la línea horizontal en cero, sin un patrón claro, lo que sugiere que la relación entre las variables independientes y la variable dependiente es probablemente lineal. No se observan patrones ni dispersión creciente o decreciente, lo que apoya la validez del supuesto de linealidad en el modelo de regresión. Esto también se refleja en los resultados de la correlación de Pearson, donde todas las variables independientes muestran correlaciones directas con el tiempo de entrega, lo que refuerza la relación lineal entre ellas y la variable dependiente.
+
+## **Normalidad**
+
+```{r}
+# Obtener los residuos del modelo
+residuos <- residuals(modelo)
+
+# Graficar el gráfico Q-Q
+qqnorm(residuos, main = "Gráfico Q-Q de los Residuos", col = "blue", pch = 19)
+qqline(residuos, col = "red", lwd = 2)  
+```
+
+En el gráfico Q-Q de los residuos, los puntos siguen bastante bien la línea roja, lo que sugiere que los residuos se distribuyen de forma normal. Sin embargo, se puede notar que en las colas (extremos), los puntos están un poco más alejados de la línea, lo que podría indicar una ligera desviación de la normalidad en esas zonas. A pesar de esto, el ajuste general sigue siendo adecuado, lo que sugiere que el supuesto de normalidad no se ve afectado de manera significativa. Lo anterior, lo podemos verficar en mayor medida con la prueba de Shapiro Wilk para los residuos, dado que contamos con una muestra inferior a los 50 datos.
+
+**1. Formulación de hipótesis**
+
+- **Hipótesis nula (\(H_0\))**: Los residuos siguen una distribución normal.
+- **Hipótesis alternativa (\(H_1\))**: Los residuos no siguen una distribución normal.
+
+**2. Nivel de significancia**
+
+Se ha utilizado un nivel de significancia de $\alpha = 0.05$.
+
+**3-4. Estadístico de prueba y valor p**
+
+```{r}
+# Realizar el test de Shapiro-Wilk
+shapiro_test <- shapiro.test(residuos)
+shapiro_test
+```
+
+**5. Comparación de valor p y nivel de significancia**
+
+Si el $p$-valor es igual a 0.3319 y el nivel de significancia $\alpha$ es 0.05, entonces comparamos:  $p$-valor > $\alpha$, lo que nos lleva a concluir que no rechazamos la hipótesis nula ($H_0$).
+
+**6. Conclusión**
+
+El resultado del test de Shapiro-Wilk para los residuos muestra un valor W = 0.94758 y un p-value = 0.3319. Esto indica que, dado el p-valor mayor a 0.05, no tenemos evidencia suficiente para rechazar la hipótesis nula de que los residuos siguen una distribución normal. En otras palabras, podemos concluir que no hay indicios de que los residuos no sean normales, lo cual apoya el supuesto de normalidad en el modelo de regresión.
+
+## **Multicolinealidad**
+
+Para detectar la multicolinealidad, utilizaremos una matriz de correlación, que nos ayudará a identificar si alguna de las variables independientes presenta una alta correlación con otras, si se encuentran correlaciones superiores a 0.7 o menores a -0.7, podría ser un indicio de multicolinealidad.
+
+```{r}
+correlaciones %>%
+  kable("html", caption = "Matriz de Correlación entre las Variables", align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center")
+```
+
+1. Distancia_km ~ Num_Paquetes: Con un valor de 0.8236, la asociación lineal es alta, lo que sugiere una fuerte relación entre estas dos variables.
+
+2. Distancia_km ~ Velocidad_Trafico: El valor de 0.8226 también indica una alta correlación, lo que muestra una asociación lineal considerable entre estas dos variables.
+
+3. Distancia_km ~ Tiempo_Entrega_min: El valor de 0.7857 sugiere igualmente una correlación alta, lo que implica una relación lineal significativa con la variable dependiente.
+
+De esta manera, todas las variables independientes tienen asociaciones lineales altas entre sí, lo que podría indicar multicolinealidad. Esto es importante porque la multicolinealidad puede afectar la interpretación de los coeficientes en un modelo de regresión, ya que estas variables podrían estar explicando en gran parte lo mismo.
+
+## **Autocorrelación**
+
+**1. Formulación de hipótesis**
+
+- **Hipótesis nula (\(H_0\))**: No existe autocorrelación en los residuos (es decir, los residuos son independientes).
+- **Hipótesis alternativa (\(H_1\))**: Existe autocorrelación en los residuos (los residuos no son independientes).
+
+**2. Nivel de significancia**
+
+Se ha utilizado un nivel de significancia de $\alpha = 0.05$.
+
+**3-4. Estadístico de prueba y valor p**
+
+```{r, warning=FALSE}
+# Realizar el test de Durbin-Watson
+dw_test <- dwtest(modelo, alternative = "two.sided")
+dw_test
+```
+
+**5. Comparación de valor p y nivel de significancia**
+
+Dado que el $p$-valor es $0.9398$ y el nivel de significancia es $\alpha = 0.05$, comparamos ambos valores y concluimos que, ya que $p$-valor > $\alpha$, no rechazamos la hipótesis nula ($H_0$).
+
+**6. Conclusión**
+
+La prueba de Durbin-Watson con un p-valor de 0.9398 sugiere que no rechazamos la hipótesis nula de que los residuos se comportan de manera independiente. Como el p-valor es mayor que el nivel de significancia de 0.05, no hay suficiente evidencia para indicar que los residuos estén correlacionados, lo que significa que se distribuyen de forma independiente, validando así este supuesto en el modelo de regresión.
+
+## **Homocedasticidad**
+
+Para verificar la homocedasticidad, realizaremos dos pruebas: la de Godfrey y la de Breusch-Pagan. Ambas pruebas sirven para evaluar si la varianza de los residuos es constante, lo que es clave para validar el supuesto de homocedasticidad en un modelo de regresión. La diferencia principal entre ellas es que la prueba de Godfrey se enfoca más en la autocorrelación de los residuos, mientras que la prueba de Breusch-Pagan evalúa si la varianza de los residuos cambia sistemáticamente con los valores predichos. Al aplicar ambas pruebas, podemos tener más seguridad de que no existe heterocedasticidad en nuestro modelo.
+
+**1. Formulación de hipótesis**
+
+- **Hipótesis nula (\(H_0\))**: Varianza de los residuos es constante (homocedasticidad).
+- **Hipótesis alternativa (\(H_1\))**: Varianza de los residuos no es constante (heterocedasticidad).
+
+**2. Nivel de significancia**
+
+Se ha utilizado un nivel de significancia de $\alpha = 0.05$.
+
+**3-4. Estadístico de prueba y valor p**
+
+**Breusch-Pagan**
+
+```{r}
+bptest(modelo)
+```
+
+**Godfrey**
+
+```{r}
+bgtest(modelo)
+```
+
+**5. Comparación de valor p y nivel de significancia**
+
+**Breusch-Pagan**
+
+Si el $p$-valor es $0.9398$ y el nivel de significancia $\alpha = 0.05$, comparamos ambos valores. Dado que $p$-valor > $\alpha$, concluimos que no rechazamos la hipótesis nula ($H_0$).
+
+**Godfrey**
+
+Dado que el $p$-valor es $0.6735$ y el nivel de significancia es $\alpha = 0.05$, comparamos ambos valores y concluimos que, ya que $p$-valor > $\alpha$, no rechazamos la hipótesis nula ($H_0$).
+
+
+**6. Conclusión**
+
+**Breusch-Pagan**
+
+La prueba de Breusch-Pagan con un p-valor de 0.9398 sugiere que no rechazamos la hipótesis nula de homocedasticidad. Dado que el p-valor es mayor que el nivel de significancia de 0.05, no hay suficiente evidencia para indicar que existe heterocedasticidad en los residuos, lo que implica que la varianza de los residuos se mantiene constante a lo largo de las observaciones y valida este supuesto en el modelo de regresión.
+
+**Godfrey**
+
+La prueba de Godfrey, con un $p$-valor de $0.6735$ y un nivel de significancia de $\alpha = 0.05$, indica que no hay evidencia suficiente para rechazar la hipótesis nula. Esto sugiere que no hay autocorrelación en los residuos del modelo, ya que el $p$-valor es mayor que el nivel de significancia. Por lo tanto, podemos concluir que los residuos se comportan de manera independiente, lo que valida este supuesto en el modelo de regresión.
+
+
+
+
+
