@@ -295,12 +295,13 @@ cat("El valor de R^2 ajustado es:", round(r_squared_ajustado, 4), "\n")
 
 El \( R^2_{\text{ajustado}} = 0.7017 \) indica que el **70.17%** de la variabilidad en el **Tiempo_Entrega_min** es explicada por las variables del modelo. Este valor refleja un ajuste razonable del modelo, sugiriendo que las variables seleccionadas tienen un impacto notable en la predicción del tiempo de entrega. Sin embargo, hay un porcentaje significativo de la variabilidad (aproximadamente el **29.83%**) que no está siendo explicado por el modelo, lo que sugiere que hay otros factores no contemplados en el análisis.
 
-# **8.  Coeficiente de correlación de Pearson (cálculo e interpretación)**
+# **8.  Coeficiente de correlación de Pearson**
 
 ```{r}
 correlacion <- sqrt(r_squared_ajustado)
 cat("El coeficiente de correlación es:",round(correlacion, 4))
 ```
+
 El coeficiente de correlación de 0.8377 indica una relación fuerte y positiva (directa) entre las variables, esto significa que, en general, cuando una variable aumenta, el tiempo de entrega también tiende a aumentar. Aunque este valor refleja una relación lineal entre las variables, es importante recordar que se trata de una correlación múltiple, lo que significa que esta relación involucra el comportamiento conjunto de todas las variables del modelo. Para verificar mejor esta correlación, se realizará un análisis detallado de cada variable independiente en relación con la variable dependiente.
 
 ```{r}
@@ -510,7 +511,7 @@ Dado que el $p$-valor es $0.6735$ y el nivel de significancia es $\alpha = 0.05$
 
 **Breusch-Pagan**
 
-La prueba de Breusch-Pagan con un p-valor de 0.9398 sugiere que no rechazamos la hipótesis nula de homocedasticidad. Dado que el p-valor es mayor que el nivel de significancia de 0.05, no hay suficiente evidencia para indicar que existe heterocedasticidad en los residuos, lo que implica que la varianza de los residuos se mantiene constante a lo largo de las observaciones y valida este supuesto en el modelo de regresión.
+La prueba de Breusch-Pagan con un $p$-valor de $0.9398$ sugiere que no rechazamos la hipótesis nula de homocedasticidad. Dado que el p-valor es mayor que el nivel de significancia de 0.05, no hay suficiente evidencia para indicar que existe heterocedasticidad en los residuos, lo que implica que la varianza de los residuos se mantiene constante a lo largo de las observaciones y valida este supuesto en el modelo de regresión.
 
 **Godfrey**
 
