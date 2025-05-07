@@ -10,7 +10,7 @@ output:
     css: styles.css  
 
 navbar:
-  title: "📊 Análisis de caso 3"
+  title: "🔍 Análisis de caso 3"
   left:
     - text: "Ejercicio de regresión lineal múltiple"
       icon: fa-chart-bar
