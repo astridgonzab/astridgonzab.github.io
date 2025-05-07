@@ -69,7 +69,6 @@ Este análisis permitirá comprender cómo influyen estos factores en los tiempo
 # Ajustar el modelo de regresión lineal múltiple
 modelo <- lm(Tiempo_Entrega_min ~ Distancia_km + Num_Paquetes + Velocidad_Trafico, data = caso3)
 
-# Ver el resumen del modelo
 summary(modelo)
 ```
 A partir de la salida del modelo de regresión lineal ajustado en R, obtenemos la siguiente ecuación de la recta ajustada:
@@ -180,7 +179,7 @@ La prueba global se realiza para evaluar si las variables independientes (Distan
   H_1: \text{Al menos uno de los coeficientes } \beta_i \neq 0
   \]  
   
-Esto significa que **al menos una de las variables** tiene un efecto significativo sobre el **Tiempo_Entrega_min**.
+  Esto significa que **al menos una de las variables** tiene un efecto significativo sobre el **Tiempo_Entrega_min**.
 
 ## **2. Nivel de significancia**
 
@@ -389,10 +388,10 @@ Como se observa, en el gráfico de Residuos vs Ajustes, los puntos se distribuye
 ## **Normalidad**
 
 ```{r}
-# Obtener los residuos del modelo
+# Residuos del modelo
 residuos <- residuals(modelo)
 
-# Graficar el gráfico Q-Q
+# Gráfico Q-Q
 qqnorm(residuos, main = "Gráfico Q-Q de los Residuos", col = "blue", pch = 19)
 qqline(residuos, col = "red", lwd = 2)  
 ```
@@ -411,7 +410,7 @@ Se ha utilizado un nivel de significancia de $\alpha = 0.05$.
 **3-4. Estadístico de prueba y valor p**
 
 ```{r}
-# Realizar el test de Shapiro-Wilk
+# Test de Shapiro-Wilk
 shapiro_test <- shapiro.test(residuos)
 shapiro_test
 ```
@@ -456,7 +455,7 @@ Se ha utilizado un nivel de significancia de $\alpha = 0.05$.
 **3-4. Estadístico de prueba y valor p**
 
 ```{r, warning=FALSE}
-# Realizar el test de Durbin-Watson
+# Test de Durbin-Watson
 dw_test <- dwtest(modelo, alternative = "two.sided")
 dw_test
 ```
